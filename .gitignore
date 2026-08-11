@@ -14,9 +14,11 @@
 /.idea/AndroidProjectSystem.xml
 /.idea/runConfigurations.xml
 /.idea/migrations.xml
+/.idea/deploymentTargetSelector.xml
 
 # Gradle files
 .gradle/
+/.kotlin/
 build/
 out/
 
