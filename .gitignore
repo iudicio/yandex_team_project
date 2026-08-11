@@ -11,6 +11,9 @@
 /.idea/gradle.xml
 /.idea/compiler.xml
 /.idea/misc.xml
+/.idea/AndroidProjectSystem.xml
+/.idea/runConfigurations.xml
+/.idea/migrations.xml
 
 # Gradle files
 .gradle/

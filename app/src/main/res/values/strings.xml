@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">Practicum-Android-Diploma</string>
+    <string name="app_name">Поиск вакансий</string>
+    <string name="search_title">Поиск вакансий</string>
+    <string name="search_hint">Введите запрос</string>
+    <string name="filter_description">Открыть фильтры</string>
+    <string name="search_action_description">Перейти к вводу запроса</string>
+    <string name="clear_search_description">Очистить поисковый запрос</string>
+    <string name="navigation_home">Главная</string>
+    <string name="navigation_favorites">Избранное</string>
+    <string name="navigation_team">Команда</string>
+    <string name="filters_are_in_development">Фильтры пока в разработке</string>
+    <string name="section_is_in_development">Раздел «%1$s» пока в разработке</string>
 </resources>
