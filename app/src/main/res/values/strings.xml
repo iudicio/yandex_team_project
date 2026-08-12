@@ -13,10 +13,9 @@
     <string name="favorites_database_error">Не удалось загрузить избранное</string>
     <string name="team_title">Над приложением работали</string>
 
-    <!-- Replace these placeholders when the team agrees on the public names and roles. -->
     <string-array name="team_members">
-        <item>Участник 1 — Android-разработчик</item>
-        <item>Участник 2 — Android-разработчик</item>
-        <item>Участник 3 — Android-разработчик</item>
+        <item>iudicio — Android-разработчик</item>
+        <item>Vi1317 — Android-разработчик</item>
+        <item>etSaikou — Android-разработчик</item>
     </string-array>
 </resources>
