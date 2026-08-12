@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("ru.practicum.android.diploma.plugins.developproperties")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -35,6 +36,7 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
+        compose = true
     }
 }
 
@@ -51,6 +53,18 @@ dependencies {
     // UI layer libraries
     implementation(libs.material)
     implementation(libs.constraintlayout)
+
+    //Compose libraries
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    debugImplementation(libs.compose.ui.tooling)
+
+    implementation(libs.fragment.ktx)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit.ext)
