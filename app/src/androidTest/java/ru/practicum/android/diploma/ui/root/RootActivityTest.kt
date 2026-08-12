@@ -1,32 +1,43 @@
 package ru.practicum.android.diploma.ui.root
 
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
-import androidx.test.espresso.matcher.ViewMatchers.withHint
+import androidx.test.espresso.matcher.ViewMatchers.isSelected
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.ui.components.UiTestTags
 
 @RunWith(AndroidJUnit4::class)
 class RootActivityTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(RootActivity::class.java)
+    val composeRule = createAndroidComposeRule<RootActivity>()
 
     @Test
     fun initialScreenShowsFigmaContent() {
-        onView(withText(R.string.search_title)).check(matches(isDisplayed()))
-        onView(withHint(R.string.search_hint)).check(matches(isDisplayed()))
-        onView(withId(R.id.initialIllustration)).check(matches(isDisplayed()))
+        composeRule.onNodeWithText(
+            composeRule.activity.getString(R.string.search_title),
+        ).assertIsDisplayed()
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).assertIsDisplayed()
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INITIAL_ILLUSTRATION).assertIsDisplayed()
         onView(withId(R.id.navigationHome)).check(matches(isDisplayed()))
         onView(withId(R.id.navigationFavorites)).check(matches(isDisplayed()))
         onView(withId(R.id.navigationTeam)).check(matches(isDisplayed()))
@@ -34,13 +45,68 @@ class RootActivityTest {
 
     @Test
     fun searchActionSwitchesToClearAndClearsQuery() {
-        onView(withId(R.id.searchEditText)).perform(replaceText(QUERY))
-        onView(withId(R.id.searchActionButton))
-            .check(matches(withContentDescription(R.string.clear_search_description)))
-            .perform(click())
-        onView(withId(R.id.searchEditText)).check(matches(withText("")))
-        onView(withId(R.id.searchActionButton))
-            .check(matches(withContentDescription(R.string.search_action_description)))
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).performTextInput(QUERY)
+        composeRule.onNodeWithContentDescription(
+            composeRule.activity.getString(R.string.clear_search_description),
+        ).performClick()
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).assert(
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.EditableText,
+                AnnotatedString(""),
+            ),
+        )
+        composeRule.onNodeWithContentDescription(
+            composeRule.activity.getString(R.string.search_action_description),
+        ).assertIsDisplayed()
+    }
+
+    @Test
+    fun bottomNavigationSwitchesBetweenAllRootScreens() {
+        onView(withId(R.id.navigationFavorites)).perform(click())
+        composeRule.onNodeWithTag(UiTestTags.FAVORITES_SCREEN).assertIsDisplayed()
+
+        onView(withId(R.id.navigationTeam)).perform(click())
+        composeRule.onNodeWithTag(UiTestTags.TEAM_SCREEN).assertIsDisplayed()
+
+        onView(withId(R.id.navigationHome)).perform(click())
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_SCREEN).assertIsDisplayed()
+    }
+
+    @Test
+    fun selectedDestinationSurvivesActivityRecreation() {
+        onView(withId(R.id.navigationFavorites)).perform(click())
+        composeRule.onNodeWithTag(UiTestTags.FAVORITES_SCREEN).assertIsDisplayed()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithTag(UiTestTags.FAVORITES_SCREEN).assertIsDisplayed()
+        onView(withId(R.id.navigationFavorites)).check(matches(isSelected()))
+    }
+
+    @Test
+    fun systemBackReturnsFromFavoritesToHome() {
+        onView(withId(R.id.navigationFavorites)).perform(click())
+        composeRule.onNodeWithTag(UiTestTags.FAVORITES_SCREEN).assertIsDisplayed()
+
+        pressBack()
+
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_SCREEN).assertIsDisplayed()
+        onView(withId(R.id.navigationHome)).check(matches(isSelected()))
+    }
+
+    @Test
+    fun searchQuerySurvivesRootTabSwitch() {
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).performTextInput(QUERY)
+
+        onView(withId(R.id.navigationFavorites)).perform(click())
+        onView(withId(R.id.navigationHome)).perform(click())
+
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).assert(
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.EditableText,
+                AnnotatedString(QUERY),
+            ),
+        )
     }
 
     private companion object {

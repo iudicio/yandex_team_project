@@ -1,6 +1,10 @@
 package ru.practicum.android.diploma.presentation.favorites
 
-data class FavoritesUiState(
-    val favoritesCount: Int,
-    val isEmpty: Boolean = favoritesCount == 0
-)
+import ru.practicum.android.diploma.domain.favorites.FavoriteVacancy
+
+sealed interface FavoritesUiState {
+    data object Loading : FavoritesUiState
+    data object Empty : FavoritesUiState
+    data object DatabaseError : FavoritesUiState
+    data class Content(val vacancies: List<FavoriteVacancy>) : FavoritesUiState
+}

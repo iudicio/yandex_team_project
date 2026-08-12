@@ -74,8 +74,8 @@ jobs:
                 run: |
                     sh ci/setup_env.sh
 
-            -   name: Assemble app
-                run: ./gradlew :app:assembleDebug $commonGradleFlags
+            -   name: Build, unit tests and lint
+                run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug $commonGradleFlags
 
             -   name: Archive production artifacts
                 uses: actions/upload-artifact@v4

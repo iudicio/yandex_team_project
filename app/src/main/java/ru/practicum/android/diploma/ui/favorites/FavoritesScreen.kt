@@ -1,71 +1,185 @@
 package ru.practicum.android.diploma.ui.favorites
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.favorites.FavoriteVacancy
 import ru.practicum.android.diploma.presentation.favorites.FavoritesUiState
+import ru.practicum.android.diploma.ui.components.ScreenHeader
+import ru.practicum.android.diploma.ui.components.UiTestTags
+import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 @Composable
-fun FavoritesScreen(state: FavoritesUiState) {
+fun FavoritesScreen(
+    state: FavoritesUiState,
+    onVacancyClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.background)
+            .testTag(UiTestTags.FAVORITES_SCREEN),
     ) {
-        Text(
-            text = stringResource(R.string.navigation_favorites),
-            fontSize = 22.sp,
-            lineHeight = 26.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black,
-            modifier = Modifier.padding(start = 16.dp, top = 19.dp, bottom = 19.dp),
-        )
+        ScreenHeader(title = stringResource(R.string.navigation_favorites))
 
-        if (state.isEmpty) {
-            FavoritesEmptyContent()
-        } else {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "В избранном: ${state.favoritesCount}")
-            }
+        when (state) {
+            FavoritesUiState.Loading -> LoadingContent()
+            FavoritesUiState.Empty -> PlaceholderContent(
+                illustration = R.drawable.favorite_empty_list,
+                message = R.string.empty_list,
+            )
+
+            FavoritesUiState.DatabaseError -> PlaceholderContent(
+                illustration = R.drawable.favorite_empty_list,
+                message = R.string.favorites_database_error,
+            )
+
+            is FavoritesUiState.Content -> FavoritesList(
+                vacancies = state.vacancies,
+                onVacancyClick = onVacancyClick,
+            )
         }
     }
 }
 
 @Composable
-private fun FavoritesEmptyContent() {
+private fun LoadingContent() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Composable
+private fun PlaceholderContent(
+    @DrawableRes illustration: Int,
+    @StringRes message: Int,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             Image(
-                painter = painterResource(id = R.drawable.favorite_empty_list),
+                painter = painterResource(illustration),
                 contentDescription = null,
-                modifier = Modifier.padding(16.dp),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(223.dp)
+                    .padding(horizontal = 16.dp),
             )
             Text(
-                text = stringResource(R.string.empty_list),
-                fontSize = 22.sp,
-                lineHeight = 26.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                text = stringResource(message),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoritesList(
+    vacancies: List<FavoriteVacancy>,
+    onVacancyClick: (String) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = vacancies,
+            key = FavoriteVacancy::id,
+        ) { vacancy ->
+            FavoriteVacancyCard(
+                vacancy = vacancy,
+                onClick = { onVacancyClick(vacancy.id) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoriteVacancyCard(
+    vacancy: FavoriteVacancy,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = vacancy.title,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = listOf(vacancy.company, vacancy.location)
+                    .filter(String::isNotBlank)
+                    .joinToString(separator = ", "),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = vacancy.salary,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -73,6 +187,32 @@ private fun FavoritesEmptyContent() {
 
 @Preview(showBackground = true)
 @Composable
-private fun FavoritesScreenEmptyPreview() {
-    FavoritesScreen(state = FavoritesUiState(favoritesCount = 0))
+private fun FavoritesEmptyPreview() {
+    DiplomaTheme {
+        FavoritesScreen(
+            state = FavoritesUiState.Empty,
+            onVacancyClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun FavoritesDarkPreview() {
+    DiplomaTheme {
+        FavoritesScreen(
+            state = FavoritesUiState.Content(
+                vacancies = listOf(
+                    FavoriteVacancy(
+                        id = "1",
+                        title = "Android developer",
+                        company = "Company",
+                        location = "Moscow",
+                        salary = "from 150,000 RUB",
+                    ),
+                ),
+            ),
+            onVacancyClick = {},
+        )
+    }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="search_compose_view" type="id" />
+    <item name="favorites_compose_view" type="id" />
+    <item name="team_compose_view" type="id" />
+</resources>

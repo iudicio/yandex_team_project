@@ -1,12 +1,13 @@
 package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.ActivityRootBinding
-import ru.practicum.android.diploma.ui.favorites.FavoritesFragment
-import ru.practicum.android.diploma.ui.search.SearchFragment
 
 class RootActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,35 +15,25 @@ class RootActivity : AppCompatActivity() {
         val binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.contentContainer, SearchFragment())
-                .commit()
-        }
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.navHostFragment) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigationHome -> true
-                R.id.navigationFavorites -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.contentContainer, FavoritesFragment())
-                        .commit()
-                    true
-                }
-                R.id.navigationTeam,
-                -> {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.section_is_in_development, item.title),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    false
-                }
-
-                else -> false
+        binding.bottomNavigation.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val showBottomNavigation = destination.hierarchy.any { navDestination ->
+                navDestination.id in TOP_LEVEL_DESTINATIONS
             }
+            binding.bottomNavigation.isVisible = showBottomNavigation
+            binding.bottomNavigationDivider.isVisible = showBottomNavigation
         }
-        binding.bottomNavigation.selectedItemId = R.id.navigationHome
+    }
+
+    private companion object {
+        val TOP_LEVEL_DESTINATIONS: Set<Int> = setOf(
+            R.id.navigationHome,
+            R.id.navigationFavorites,
+            R.id.navigationTeam,
+        )
     }
 }
