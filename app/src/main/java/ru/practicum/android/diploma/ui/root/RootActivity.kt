@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.ActivityRootBinding
+import ru.practicum.android.diploma.ui.favorites.FavoritesFragment
 import ru.practicum.android.diploma.ui.search.SearchFragment
 
 class RootActivity : AppCompatActivity() {
@@ -23,7 +24,12 @@ class RootActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigationHome -> true
-                R.id.navigationFavorites,
+                R.id.navigationFavorites -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.contentContainer, FavoritesFragment())
+                        .commit()
+                    true
+                }
                 R.id.navigationTeam,
                 -> {
                     Toast.makeText(
