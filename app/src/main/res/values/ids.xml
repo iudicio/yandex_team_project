@@ -3,4 +3,5 @@
     <item name="search_compose_view" type="id" />
     <item name="favorites_compose_view" type="id" />
     <item name="team_compose_view" type="id" />
+    <item name="filter_compose_view" type="id" />
 </resources>

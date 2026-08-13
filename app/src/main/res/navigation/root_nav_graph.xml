@@ -7,7 +7,16 @@
     <fragment
         android:id="@+id/navigationHome"
         android:name="ru.practicum.android.diploma.ui.search.SearchFragment"
-        android:label="@string/navigation_home" />
+        android:label="@string/navigation_home">
+        <action
+            android:id="@+id/action_navigationHome_to_navigationFilter"
+            app:destination="@id/navigationFilter" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationFilter"
+        android:name="ru.practicum.android.diploma.ui.filter.FilterFragment"
+        android:label="@string/filter_title" />
 
     <fragment
         android:id="@+id/navigationFavorites"

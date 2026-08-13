@@ -53,6 +53,7 @@ fun SearchScreen(
     onSearchActionClicked: () -> Unit,
     onFilterClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    hasActiveFilters: Boolean = false,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -82,7 +83,11 @@ fun SearchScreen(
                     Icon(
                         painter = painterResource(R.drawable.ic_filter),
                         contentDescription = stringResource(R.string.filter_description),
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        tint = if (hasActiveFilters) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                        },
                     )
                 }
             },

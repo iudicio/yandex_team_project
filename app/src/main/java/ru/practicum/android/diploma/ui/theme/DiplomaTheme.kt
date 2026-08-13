@@ -49,6 +49,7 @@ fun DiplomaTheme(
     val colorScheme = if (isSystemInDarkTheme()) {
         darkColorScheme(
             primary = accent,
+            onPrimary = Color.White,
             background = background,
             surface = background,
             surfaceVariant = surfaceVariant,
@@ -61,6 +62,7 @@ fun DiplomaTheme(
     } else {
         lightColorScheme(
             primary = accent,
+            onPrimary = Color.White,
             background = background,
             surface = background,
             surfaceVariant = surfaceVariant,
