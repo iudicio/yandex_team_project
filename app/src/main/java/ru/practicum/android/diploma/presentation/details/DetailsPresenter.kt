@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.presentation.details
 
 import ru.practicum.android.diploma.domain.details.DetailsModel
-import ru.practicum.android.diploma.ui.details.VacancyDetailsMock
 
 class DetailsPresenter(
     private val model: DetailsModel,
