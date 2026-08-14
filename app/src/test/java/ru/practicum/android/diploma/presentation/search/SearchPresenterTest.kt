@@ -60,6 +60,17 @@ class SearchPresenterTest {
     }
 
     @Test
+    fun `applied filters repeat only a non-empty query`() {
+        presenter.attach(view)
+
+        presenter.repeatSearchAfterFiltersApplied()
+        presenter.onQueryChanged("Android")
+        presenter.repeatSearchAfterFiltersApplied()
+
+        assertEquals(1, view.repeatSearchCount)
+    }
+
+    @Test
     fun `detached presenter no longer calls view`() {
         presenter.attach(view)
         presenter.detach()
@@ -77,6 +88,7 @@ class SearchPresenterTest {
         var lastState: SearchUiState? = null
         var focusRequested = false
         var filtersOpened = false
+        var repeatSearchCount = 0
 
         override fun render(state: SearchUiState) {
             lastState = state
@@ -90,10 +102,15 @@ class SearchPresenterTest {
             filtersOpened = true
         }
 
+        override fun repeatSearch() {
+            repeatSearchCount += 1
+        }
+
         fun reset() {
             lastState = null
             focusRequested = false
             filtersOpened = false
+            repeatSearchCount = 0
         }
     }
 }

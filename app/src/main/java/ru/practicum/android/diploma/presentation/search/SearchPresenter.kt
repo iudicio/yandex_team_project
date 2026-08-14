@@ -36,6 +36,12 @@ class SearchPresenter(
         view?.openFilters()
     }
 
+    fun repeatSearchAfterFiltersApplied() {
+        if (model.query.isNotBlank()) {
+            view?.repeatSearch()
+        }
+    }
+
     private fun render() {
         view?.render(SearchUiState(query = model.query))
     }

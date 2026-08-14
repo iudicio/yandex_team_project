@@ -16,7 +16,60 @@
     <fragment
         android:id="@+id/navigationFilter"
         android:name="ru.practicum.android.diploma.ui.filter.FilterFragment"
-        android:label="@string/filter_title" />
+        android:label="@string/filter_title">
+        <action
+            android:id="@+id/action_navigationFilter_to_navigationWorkplace"
+            app:destination="@id/navigationWorkplace" />
+        <action
+            android:id="@+id/action_navigationFilter_to_navigationIndustry"
+            app:destination="@id/navigationIndustry" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationWorkplace"
+        android:name="ru.practicum.android.diploma.ui.filter.WorkplaceFragment"
+        android:label="@string/filter_workplace_title">
+        <action
+            android:id="@+id/action_navigationWorkplace_to_navigationCountry"
+            app:destination="@id/navigationCountry" />
+        <action
+            android:id="@+id/action_navigationWorkplace_to_navigationRegion"
+            app:destination="@id/navigationRegion" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationCountry"
+        android:name="ru.practicum.android.diploma.ui.filter.CountryFragment"
+        android:label="@string/filter_country_title">
+        <argument
+            android:name="countryId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationRegion"
+        android:name="ru.practicum.android.diploma.ui.filter.RegionFragment"
+        android:label="@string/filter_region_title">
+        <argument
+            android:name="countryId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="regionId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationIndustry"
+        android:name="ru.practicum.android.diploma.ui.filter.IndustryFragment"
+        android:label="@string/filter_industry_title">
+        <argument
+            android:name="industryId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigationFavorites"

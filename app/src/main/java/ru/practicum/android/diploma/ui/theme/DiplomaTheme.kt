@@ -14,6 +14,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ru.practicum.android.diploma.R
 
+private const val FIGMA_WHITE_ARGB = 0xFFFDFDFD
+private val FigmaWhite = Color(FIGMA_WHITE_ARGB)
+
 private val DiplomaTypography = Typography(
     headlineSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -33,6 +36,18 @@ private val DiplomaTypography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp,
     ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+    ),
+    titleMedium = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+    ),
 )
 
 @Composable
@@ -49,7 +64,7 @@ fun DiplomaTheme(
     val colorScheme = if (isSystemInDarkTheme()) {
         darkColorScheme(
             primary = accent,
-            onPrimary = Color.White,
+            onPrimary = FigmaWhite,
             background = background,
             surface = background,
             surfaceVariant = surfaceVariant,
@@ -57,12 +72,12 @@ fun DiplomaTheme(
             onSurface = textPrimary,
             onSurfaceVariant = secondaryText,
             error = destructive,
-            onError = Color.White,
+            onError = FigmaWhite,
         )
     } else {
         lightColorScheme(
             primary = accent,
-            onPrimary = Color.White,
+            onPrimary = FigmaWhite,
             background = background,
             surface = background,
             surfaceVariant = surfaceVariant,
@@ -70,7 +85,7 @@ fun DiplomaTheme(
             onSurface = textPrimary,
             onSurfaceVariant = secondaryText,
             error = destructive,
-            onError = Color.White,
+            onError = FigmaWhite,
         )
     }
 

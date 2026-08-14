@@ -67,10 +67,9 @@ class RootActivityTest {
             composeRule.activity.getString(R.string.clear_search_description),
         ).performClick()
         composeRule.onNodeWithTag(UiTestTags.SEARCH_INPUT).assert(
-            SemanticsMatcher.expectValue(
-                SemanticsProperties.EditableText,
-                AnnotatedString(""),
-            ),
+            SemanticsMatcher("search input is empty") { node ->
+                node.config[SemanticsProperties.EditableText].text.isEmpty()
+            },
         )
         composeRule.onNodeWithContentDescription(
             composeRule.activity.getString(R.string.search_action_description),
@@ -183,6 +182,36 @@ class RootActivityTest {
         composeRule.onNodeWithTag(UiTestTags.FILTER_ONLY_WITH_SALARY).assertIsOff()
         composeRule.onNodeWithTag(UiTestTags.FILTER_RESET).assertDoesNotExist()
         composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).assertDoesNotExist()
+    }
+
+    @Test
+    fun countryAndRegionScreensOpenInsideSingleActivity() {
+        openFilterScreen()
+
+        composeRule.onNodeWithTag(UiTestTags.FILTER_WORKPLACE).performClick()
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_SCREEN).assertIsDisplayed()
+        onView(withId(R.id.bottomNavigation)).check(matches(not(isDisplayed())))
+
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_COUNTRY).performClick()
+        composeRule.onNodeWithTag(UiTestTags.COUNTRY_SCREEN).assertIsDisplayed()
+        pressBack()
+
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_REGION).performClick()
+        composeRule.onNodeWithTag(UiTestTags.REGION_SCREEN).assertIsDisplayed()
+        onView(withId(R.id.bottomNavigation)).check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun applyPersistsFilterAndReturnsToSearch() {
+        openFilterScreen()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_ONLY_WITH_SALARY).performClick()
+
+        composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).performClick()
+
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_SCREEN).assertIsDisplayed()
+        onView(withId(R.id.bottomNavigation)).check(matches(isDisplayed()))
+        openFilterScreen()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_ONLY_WITH_SALARY).assertIsOn()
     }
 
     private fun openFilterScreen() {

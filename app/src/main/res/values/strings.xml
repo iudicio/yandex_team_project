@@ -1,4 +1,18 @@
 <resources>
+    <string name="search_empty_results">Таких вакансий нет</string>
+    <string name="search_results_error">Не удалось получить список вакансий</string>
+    <string name="search_no_internet">Нет интернета</string>
+    <string name="search_server_error">Ошибка сервера</string>
+    <string name="search_paging_no_internet">Нет интернет-соединения</string>
+    <string name="search_paging_error">Произошла ошибка загрузки, попробуйте ещё раз</string>
+    <string name="search_company_logo_description">Логотип компании</string>
+    <string name="salary_not_specified">Зарплата не указана</string>
+    <plurals name="search_found_vacancies">
+        <item quantity="one">Найдена %d вакансия</item>
+        <item quantity="few">Найдено %d вакансии</item>
+        <item quantity="many">Найдено %d вакансий</item>
+        <item quantity="other">Найдено %d вакансии</item>
+    </plurals>
     <string name="app_name">Поиск вакансий</string>
     <string name="search_title">Поиск вакансий</string>
     <string name="search_hint">Введите запрос</string>
@@ -18,6 +32,24 @@
     <string name="filter_clear_salary_description">Очистить зарплату</string>
     <string name="filter_clear_industry_description">Очистить отрасль</string>
     <string name="filter_industry_selection_unavailable">Выбор отрасли пока недоступен</string>
+    <string name="filter_workplace">Место работы</string>
+    <string name="filter_workplace_title">Выбор места работы</string>
+    <string name="filter_country">Страна</string>
+    <string name="filter_country_title">Выбор страны</string>
+    <string name="filter_region">Регион</string>
+    <string name="filter_region_title">Выбор региона</string>
+    <string name="filter_industry_title">Выбор отрасли</string>
+    <string name="filter_region_search_hint">Введите регион</string>
+    <string name="filter_industry_search_hint">Введите отрасль</string>
+    <string name="filter_choose">Выбрать</string>
+    <string name="filter_catalog_error">Не удалось получить список</string>
+    <string name="filter_region_not_found">Такого региона нет</string>
+    <string name="filter_industry_not_found">Такой отрасли нет</string>
+    <string name="filter_clear_workplace_description">Очистить место работы</string>
+    <string name="filter_clear_country_description">Очистить страну</string>
+    <string name="filter_clear_region_description">Очистить регион</string>
+    <string name="catalog_search_description">Поиск</string>
+    <string name="catalog_clear_search_description">Очистить запрос</string>
     <string name="navigate_back_description">Назад</string>
     <string name="empty_list">Список пуст</string>
     <string name="favorites_database_error">Не удалось загрузить избранное</string>
