@@ -19,4 +19,13 @@
         android:name="ru.practicum.android.diploma.ui.team.TeamFragment"
         android:label="@string/navigation_team" />
 
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="ru.practicum.android.diploma.ui.details.DetailsFragment"
+        android:label="DetailsFragment">
+        <argument
+            android:name="vacancy_id"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
