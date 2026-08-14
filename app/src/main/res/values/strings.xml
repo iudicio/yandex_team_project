@@ -12,6 +12,52 @@
     <string name="empty_list">Список пуст</string>
     <string name="favorites_database_error">Не удалось загрузить избранное</string>
     <string name="team_title">Над приложением работали</string>
+    <string name="arrow_description">Назад</string>
+    <string name="details_title">Вакансия</string>
+    <string name="details_share">Поделиться</string>
+    <string name="details_favorite_add">Добавить в избранное</string>
+    <string name="details_favorite_remove">Удалить из избранного</string>
+    <string name="details_experience">Требуемый опыт работы:</string>
+    <string name="details_employment_schedule">%1$s, %2$s</string>
+    <string name="details_description_header">Описание вакансии</string>
+    <string name="details_key_skills_header">Ключевые навыки</string>
+    <string name="details_contacts_header">Контакты</string>
+    <string name="details_contact_person">Контактное лицо</string>
+    <string name="details_contact_email">E-mail</string>
+    <string name="details_contact_phone">Телефон</string>
+    <string name="details_contact_comment">Комментарий</string>
+    <string name="share_vacancy">Поделиться вакансией</string>
+    <string name="mock_vacancy_description">
+    &lt;h2&gt;Описание вакансии&lt;/h2&gt;
+    &lt;p&gt;Ищем Android-разработчика в продуктовую команду мобильного приложения с активной пользовательской базой.&lt;/p&gt;
+    &lt;p&gt;Важно, чтобы кандидат уверенно работал с Kotlin и мог доводить задачи до продакшена без лишних согласований.&lt;/p&gt;
+    &lt;section&gt;
+        &lt;h3&gt;Обязанности&lt;/h3&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Разрабатывать новую функциональность приложения и улучшать текущие пользовательские сценарии.&lt;/li&gt;
+            &lt;li&gt;Проектировать клиент-серверное взаимодействие совместно с backend-командой.&lt;/li&gt;
+            &lt;li&gt;Поддерживать качество кода, писать unit- и UI-тесты.&lt;/li&gt;
+            &lt;li&gt;Участвовать в code review и техническом планировании.&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/section&gt;
+    &lt;section&gt;
+        &lt;h3&gt;Требования&lt;/h3&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Коммерческий опыт Android-разработки от 1 года.&lt;/li&gt;
+            &lt;li&gt;Уверенное знание Kotlin, Coroutines и Flow.&lt;/li&gt;
+            &lt;li&gt;Опыт работы с Android SDK, архитектурой MVVM или MVI.&lt;/li&gt;
+            &lt;li&gt;Понимание принципов SOLID и чистой архитектуры.&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/section&gt;
+    &lt;section&gt;
+        &lt;h3&gt;Условия&lt;/h3&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Полная занятость и удаленный формат работы.&lt;/li&gt;
+            &lt;li&gt;Адекватные сроки, прозрачная постановка задач и регулярная обратная связь.&lt;/li&gt;
+            &lt;li&gt;Бюджет на обучение, внутренние митапы и ревью архитектурных решений.&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/section&gt;
+</string>
 
     <string-array name="team_members">
         <item>iudicio — Android-разработчик</item>
