@@ -6,6 +6,7 @@ interface SearchContract {
         fun render(state: SearchUiState)
         fun requestSearchFocus()
         fun openFilters()
+        fun repeatSearch()
     }
 
     interface Presenter {

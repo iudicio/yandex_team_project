@@ -17,6 +17,7 @@ navigation = "2.9.8"
 espressoCore = "3.5.1"
 junit4 = "4.13.2"
 junitExt = "1.1.5"
+coroutines = "1.9.0"
 
 # Static analysis
 detekt = "1.23.8"
@@ -26,6 +27,9 @@ composeBom = "2026.02.00"
 lifecycle = "2.9.4"
 
 fragmentKtx = "1.8.9"
+okhttp = "4.12.0"
+retrofit = "2.11.0"
+coil = "3.5.0"
 
 [libraries]
 
@@ -43,6 +47,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit-ext = { module = "androidx.test.ext:junit", version.ref = "junitExt" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # Static analysis
 staticAnalysis-detektApi = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
@@ -67,5 +72,12 @@ lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-ru
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 
 fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+
+# Network
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 [bundles]

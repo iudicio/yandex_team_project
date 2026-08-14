@@ -5,78 +5,145 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.domain.search.InMemorySearchModel
-import ru.practicum.android.diploma.presentation.search.SearchContract
-import ru.practicum.android.diploma.presentation.search.SearchPresenter
-import ru.practicum.android.diploma.presentation.search.SearchUiState
+import ru.practicum.android.diploma.di.appContainer
+import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
+import ru.practicum.android.diploma.domain.search.VacancyRepository
+import ru.practicum.android.diploma.presentation.search.SearchEvent
+import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.filter.FilterFragment
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
+import java.io.IOException
 
-class SearchFragment : Fragment(), SearchContract.View {
+class SearchFragment : Fragment() {
 
-    private var presenter: SearchContract.Presenter? = null
-    private val state = mutableStateOf(SearchUiState(query = ""))
+    private val viewModel: SearchViewModel by viewModels {
+        val container = requireContext().appContainer
+        SearchViewModelFactory(
+            vacancyRepository = container.vacancyRepository,
+            filterSettingsRepository = container.filterSettingsRepository,
+        )
+    }
     private val focusRequestKey = mutableIntStateOf(0)
+    private val hasActiveFilters = mutableStateOf(false)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        val searchPresenter = SearchPresenter(
-            model = InMemorySearchModel(
-                query = savedInstanceState?.getString(STATE_QUERY) ?: state.value.query,
-            ),
-        )
-        presenter = searchPresenter
-        searchPresenter.attach(this)
+    ): View = ComposeView(requireContext()).apply {
+        id = R.id.search_compose_view
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            DiplomaTheme {
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                SearchScreen(
+                    state = state,
+                    focusRequestKey = focusRequestKey.intValue,
+                    onQueryChanged = viewModel::onQueryChanged,
+                    onSearchActionClicked = {
+                        if (state.query.isEmpty()) {
+                            focusRequestKey.intValue += 1
+                        } else {
+                            viewModel.onQueryChanged("")
+                        }
+                    },
+                    onSearchSubmitted = viewModel::submit,
+                    onFilterClicked = ::openFilters,
+                    onLoadNextPage = viewModel::loadNextPage,
+                    hasActiveFilters = hasActiveFilters.value,
+                )
+            }
+        }
+    }
 
-        return ComposeView(requireContext()).apply {
-            id = R.id.search_compose_view
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                DiplomaTheme {
-                    SearchScreen(
-                        state = state.value,
-                        focusRequestKey = focusRequestKey.intValue,
-                        onQueryChanged = searchPresenter::onQueryChanged,
-                        onSearchActionClicked = searchPresenter::onSearchActionClicked,
-                        onFilterClicked = searchPresenter::onFilterClicked,
-                    )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeAppliedFilters()
+        observeSearchEvents()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshActiveFilters()
+    }
+
+    private fun observeAppliedFilters() {
+        val handle = findNavController().currentBackStackEntry?.savedStateHandle ?: return
+        handle.getLiveData<Boolean>(FilterFragment.FILTERS_APPLIED_RESULT_KEY)
+            .observe(viewLifecycleOwner) { applied ->
+                if (applied) {
+                    refreshActiveFilters()
+                    viewModel.onFiltersApplied()
+                }
+                handle.remove<Boolean>(FilterFragment.FILTERS_APPLIED_RESULT_KEY)
+            }
+    }
+
+    private fun observeSearchEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.events.collect { event ->
+                    val message = when (event) {
+                        is SearchEvent.PagingFailed -> if (event.cause is IOException) {
+                            R.string.search_paging_no_internet
+                        } else {
+                            R.string.search_paging_error
+                        }
+                    }
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(STATE_QUERY, state.value.query)
-        super.onSaveInstanceState(outState)
+    private fun refreshActiveFilters() {
+        hasActiveFilters.value = requireContext()
+            .appContainer
+            .filterSettingsRepository
+            .load()
+            .hasActiveFilters
     }
 
-    override fun onDestroyView() {
-        presenter?.detach()
-        presenter = null
-        super.onDestroyView()
+    private fun openFilters() {
+        val navController = findNavController()
+        if (navController.currentDestination?.id == R.id.navigationHome) {
+            navController.navigate(R.id.action_navigationHome_to_navigationFilter)
+        }
     }
+}
 
-    override fun render(state: SearchUiState) {
-        this.state.value = state
-    }
+private class SearchViewModelFactory(
+    private val vacancyRepository: VacancyRepository,
+    private val filterSettingsRepository: FilterSettingsRepository,
+) : ViewModelProvider.Factory {
 
-    override fun requestSearchFocus() {
-        focusRequestKey.intValue += 1
-    }
-
-    override fun openFilters() {
-        Toast.makeText(requireContext(), R.string.filters_are_in_development, Toast.LENGTH_SHORT).show()
-    }
-
-    private companion object {
-        const val STATE_QUERY = "search_query"
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+        require(modelClass == SearchViewModel::class.java) {
+            "Unsupported ViewModel class: ${modelClass.name}"
+        }
+        return modelClass.cast(
+            SearchViewModel(
+                savedStateHandle = extras.createSavedStateHandle(),
+                vacancyRepository = vacancyRepository,
+                filterSettingsRepository = filterSettingsRepository,
+            ),
+        )
     }
 }
