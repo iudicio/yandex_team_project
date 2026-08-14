@@ -19,6 +19,7 @@ fun ScreenHeader(
     title: String,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
+    backActions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -26,6 +27,7 @@ fun ScreenHeader(
             .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        backActions()
         Text(
             text = title,
             modifier = Modifier
