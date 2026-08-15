@@ -9,6 +9,7 @@ import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.MutableFilterRepository
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.QueueVacancyRepository
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.result
@@ -93,7 +94,7 @@ class SearchViewModelResultTest {
 
     private fun createViewModel(repository: QueueVacancyRepository): SearchViewModel = SearchViewModel(
         savedStateHandle = SavedStateHandle(),
-        vacancyRepository = repository,
+        searchInteractor = SearchVacanciesInteractorImpl(repository),
         filterSettingsRepository = MutableFilterRepository(),
         dispatcher = mainDispatcherRule.dispatcher,
         debounceMillis = SearchViewModel.DEFAULT_DEBOUNCE_MILLIS,

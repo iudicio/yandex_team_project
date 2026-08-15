@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
-import ru.practicum.android.diploma.domain.search.VacancyRepository
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.search.VacancySearchRequest
 import ru.practicum.android.diploma.domain.search.VacancySearchResult
 import ru.practicum.android.diploma.domain.search.toVacancySearchRequest
@@ -24,7 +24,7 @@ import java.io.IOException
 
 class SearchViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val vacancyRepository: VacancyRepository,
+    private val searchInteractor: SearchVacanciesInteractor,
     private val filterSettingsRepository: FilterSettingsRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     private val debounceMillis: Long = DEFAULT_DEBOUNCE_MILLIS,
@@ -204,7 +204,7 @@ class SearchViewModel(
 
     @Suppress("detekt.TooGenericExceptionCaught")
     private suspend fun safeSearch(request: VacancySearchRequest): Result<VacancySearchResult> = try {
-        vacancyRepository.search(request)
+        searchInteractor.search(request)
     } catch (exception: CancellationException) {
         throw exception
     } catch (exception: Exception) {
