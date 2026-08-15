@@ -34,9 +34,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.favorites.FavoriteVacancy
+import ru.practicum.android.diploma.domain.search.Salary
 import ru.practicum.android.diploma.presentation.favorites.FavoritesUiState
 import ru.practicum.android.diploma.ui.components.ScreenHeader
 import ru.practicum.android.diploma.ui.components.UiTestTags
+import ru.practicum.android.diploma.ui.components.VacancyRow
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 @Composable
@@ -123,63 +125,15 @@ private fun FavoritesList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
             items = vacancies,
             key = FavoriteVacancy::id,
         ) { vacancy ->
-            FavoriteVacancyCard(
+            VacancyRow(
                 vacancy = vacancy,
                 onClick = { onVacancyClick(vacancy.id) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun FavoriteVacancyCard(
-    vacancy: FavoriteVacancy,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = vacancy.title,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                text = listOf(vacancy.company, vacancy.location)
-                    .filter(String::isNotBlank)
-                    .joinToString(separator = ", "),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                text = vacancy.salary,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -205,10 +159,11 @@ private fun FavoritesDarkPreview() {
                 vacancies = listOf(
                     FavoriteVacancy(
                         id = "1",
-                        title = "Android developer",
+                        name = "Android developer",
                         company = "Company",
-                        location = "Moscow",
-                        salary = "from 150,000 RUB",
+                        city = "Moscow",
+                        salary = Salary(from = 150_000, currency = "RUR"),
+                        logo = null,
                     ),
                 ),
             ),
