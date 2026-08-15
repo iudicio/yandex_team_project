@@ -53,7 +53,7 @@ class AppContainer(context: Context) {
     val vacancyDetailRepository: VacancyDetailRepository by lazy {
         RetrofitVacancyDetailRepository(api)
     }
-    val favoritesRepository: FavoritesRepository  by lazy {
+    val favoritesRepository: FavoritesRepository by lazy {
         FavoritesRepositoryImpl(database.favoriteVacancyDao())
     }
 }
