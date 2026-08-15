@@ -41,6 +41,7 @@ data class SalaryDto(
     @SerializedName("currency")
     val currency: String?
 )
+
 data class EmployerDto(
     @SerializedName("id")
     val id: String?,
@@ -49,7 +50,6 @@ data class EmployerDto(
     @SerializedName("logo")
     val logo: String
 )
-
 
 data class BaseDetailDataDto(
     @SerializedName("id")
@@ -68,6 +68,7 @@ data class ContactsDto(
     @SerializedName("phones")
     val phones: List<PhoneDto>
 )
+
 data class PhoneDto(
     @SerializedName("comment")
     val comment: String?,
