@@ -1,8 +1,6 @@
 package ru.practicum.android.diploma.data.network.dto
 
 import com.google.gson.annotations.SerializedName
-import kotlin.Array
-import kotlin.String
 
 data class VacancyDetailResponseDto(
     @SerializedName("id")

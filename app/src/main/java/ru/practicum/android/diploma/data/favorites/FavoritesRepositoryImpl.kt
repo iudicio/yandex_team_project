@@ -14,7 +14,6 @@ import ru.practicum.android.diploma.domain.details.BaseDetailData
 import ru.practicum.android.diploma.domain.details.Contacts
 import ru.practicum.android.diploma.domain.details.Employer
 import ru.practicum.android.diploma.domain.details.FavoritesRepository
-import ru.practicum.android.diploma.domain.details.Phone
 import ru.practicum.android.diploma.domain.details.VacancyDetailResult
 import ru.practicum.android.diploma.domain.filter.Area
 import ru.practicum.android.diploma.domain.filter.Industry

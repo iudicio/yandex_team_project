@@ -20,7 +20,6 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.di.appContainer
@@ -30,7 +29,6 @@ import ru.practicum.android.diploma.domain.details.VacancyDetailResult
 import ru.practicum.android.diploma.presentation.details.DetailsEvent
 import ru.practicum.android.diploma.presentation.details.DetailsViewModel
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
-import java.io.IOException
 
 class DetailsFragment : Fragment() {
 
