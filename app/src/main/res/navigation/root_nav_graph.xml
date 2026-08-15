@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_navigationHome_to_navigationFilter"
             app:destination="@id/navigationFilter" />
+        <action
+            android:id="@+id/action_navigationHome_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
 
     <fragment

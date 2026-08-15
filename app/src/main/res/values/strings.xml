@@ -69,6 +69,8 @@
     <string name="details_contact_phone">Телефон</string>
     <string name="details_contact_comment">Комментарий</string>
     <string name="share_vacancy">Поделиться вакансией</string>
+    <string name="details_phone_error">Не удалось открыть приложение для звонков</string>
+    <string name="details_email_error">Не удалось открыть почтовое приложение</string>
     <string name="mock_vacancy_description">
     &lt;h2&gt;Описание вакансии&lt;/h2&gt;
     &lt;p&gt;Ищем Android-разработчика в продуктовую команду мобильного приложения с активной пользовательской базой.&lt;/p&gt;
@@ -100,6 +102,7 @@
         &lt;/ul&gt;
     &lt;/section&gt;
 </string>
+    <string name="retry">Повторить</string>
 
     <string-array name="team_members">
         <item>iudicio — Android-разработчик</item>

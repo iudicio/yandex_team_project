@@ -1,24 +1,10 @@
 package ru.practicum.android.diploma.presentation.details
 
-import ru.practicum.android.diploma.ui.details.VacancyDetailsMock
+import ru.practicum.android.diploma.domain.details.VacancyDetailResult
 
 data class DetailsUiState(
-    val vacancy: VacancyDetailsMock = VacancyDetailsMock(
-        id = "",
-        title = "",
-        salary = "",
-        employerName = "",
-        employerLogoUrl = null,
-        city = "",
-        experience = "",
-        employment = "",
-        schedule = "",
-        description = "",
-        keySkills = emptyList(),
-        contactName = null,
-        contactEmail = null,
-        contactPhone = null,
-        contactComment = null
-    ),
-    val isFavorite: Boolean = false
+    val isLoading: Boolean = false,
+    val vacancy: VacancyDetailResult? = null,
+    val isFavorite: Boolean = false,
+    val error: String? = null
 )
