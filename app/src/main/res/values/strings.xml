@@ -103,6 +103,7 @@
     &lt;/section&gt;
 </string>
     <string name="retry">Повторить</string>
+    <string name="details_error_massage">Вакансия не найдена или удалена</string>
 
     <string-array name="team_members">
         <item>iudicio — Android-разработчик</item>

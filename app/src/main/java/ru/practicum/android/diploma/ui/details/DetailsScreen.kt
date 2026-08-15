@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -121,7 +120,11 @@ fun DetailsScreen(
 
         when {
             state.isLoading -> LoadingState()
-            state.error != null -> ErrorState(message = state.error, onRetry = onRetry)
+            state.error != null -> ErrorState(
+                message = stringResource(R.string.details_error_massage),
+                onRetry = onRetry
+            )
+
             state.vacancy != null -> VacancyContent(
                 vacancy = state.vacancy,
                 onPhoneClicked = onPhoneClicked,
@@ -150,15 +153,24 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(R.drawable.details_empty),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(223.dp)
+                .padding(horizontal = 16.dp),
+        )
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 46.dp, top = 16.dp, end = 46.dp),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(CONTENT_PADDING.dp))
-        Button(onClick = onRetry, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(R.string.retry))
-        }
     }
 }
 
