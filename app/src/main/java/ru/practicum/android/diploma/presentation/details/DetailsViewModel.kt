@@ -14,7 +14,6 @@ import ru.practicum.android.diploma.domain.details.FavoritesRepository
 import ru.practicum.android.diploma.domain.details.VacancyDetailRepository
 import ru.practicum.android.diploma.domain.details.VacancyDetailResult
 
-
 sealed class DetailsEvent {
     object NavigateBack : DetailsEvent()
     data class ShareVacancy(val vacancy: VacancyDetailResult) : DetailsEvent()
