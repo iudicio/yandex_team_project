@@ -4,7 +4,6 @@ import ru.practicum.android.diploma.domain.filter.Area
 import ru.practicum.android.diploma.domain.filter.Industry
 import ru.practicum.android.diploma.domain.search.Salary
 
-
 data class VacancyDetailResult(
     val id: String,
     val name: String,
