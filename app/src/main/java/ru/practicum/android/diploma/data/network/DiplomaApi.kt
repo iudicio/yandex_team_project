@@ -26,6 +26,6 @@ interface DiplomaApi {
     ): VacancyResponseDto
 
     @GET("vacancies/{vacancyId}")
-    suspend fun getVacancy(@Path("vacancyId") id : String): VacancyDetailResponseDto
+    suspend fun getVacancy(@Path("vacancyId") id: String): VacancyDetailResponseDto
 
 }
