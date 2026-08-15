@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.details
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -35,7 +36,7 @@ class DetailsFragment : Fragment() {
     private val viewModel: DetailsViewModel by viewModels {
         val container = requireContext().appContainer
         DetailsViewModelFactory(
-            vacancyId = arguments?.getString(ARG_VACANCY_ID) ?: "",
+            vacancyId = arguments?.getString(ARG_VACANCY_ID).orEmpty(),
             vacancyDetailRepository = container.vacancyDetailRepository,
             favoritesRepository = container.favoritesRepository,
         )
@@ -77,12 +78,15 @@ class DetailsFragment : Fragment() {
                         is DetailsEvent.NavigateBack -> {
                             requireActivity().onBackPressedDispatcher.onBackPressed()
                         }
+
                         is DetailsEvent.ShareVacancy -> {
                             shareVacancy(event.vacancy)
                         }
+
                         is DetailsEvent.DialPhone -> {
                             dialPhone(event.phone)
                         }
+
                         is DetailsEvent.SendEmail -> {
                             sendEmail(event.email)
                         }
@@ -96,7 +100,6 @@ class DetailsFragment : Fragment() {
         val shareText = buildString {
             append(vacancy.name)
             append("\n\n")
-
             vacancy.salary?.let { salary ->
                 if (salary.from != null || salary.to != null) {
                     append("Зарплата: ")
@@ -104,17 +107,14 @@ class DetailsFragment : Fragment() {
                     append("\n")
                 }
             }
-
             append(vacancy.employer.name)
             vacancy.address?.city?.let { city ->
                 append(", ")
                 append(city)
             }
-
             append("\n")
             append(vacancy.url)
         }
-
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, shareText)
@@ -129,7 +129,7 @@ class DetailsFragment : Fragment() {
                 data = Uri.parse("tel:$phone")
             }
             startActivity(intent)
-        } catch (e: Exception) {
+        } catch (e: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
                 R.string.details_phone_error,
@@ -144,7 +144,7 @@ class DetailsFragment : Fragment() {
                 data = Uri.parse("mailto:$email")
             }
             startActivity(intent)
-        } catch (e: Exception) {
+        } catch (e: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
                 R.string.details_email_error,
@@ -158,16 +158,14 @@ class DetailsFragment : Fragment() {
             "RUB" -> "₽"
             "USD" -> "$"
             "EUR" -> "€"
-            else -> salary.currency ?: ""
+            else -> salary.currency.orEmpty()
         }
-
         return when {
             salary.from != null && salary.to != null ->
                 "от ${formatNumber(salary.from)} до ${formatNumber(salary.to)} $currencySymbol".trim()
-            salary.from != null ->
-                "от ${formatNumber(salary.from)} $currencySymbol".trim()
-            salary.to != null ->
-                "до ${formatNumber(salary.to)} $currencySymbol".trim()
+
+            salary.from != null -> "от ${formatNumber(salary.from)} $currencySymbol".trim()
+            salary.to != null -> "до ${formatNumber(salary.to)} $currencySymbol".trim()
             else -> getString(R.string.salary_not_specified)
         }
     }
@@ -178,14 +176,6 @@ class DetailsFragment : Fragment() {
 
     companion object {
         const val ARG_VACANCY_ID = "vacancy_id"
-
-        fun newInstance(vacancyId: String): DetailsFragment {
-            return DetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_VACANCY_ID, vacancyId)
-                }
-            }
-        }
     }
 }
 
