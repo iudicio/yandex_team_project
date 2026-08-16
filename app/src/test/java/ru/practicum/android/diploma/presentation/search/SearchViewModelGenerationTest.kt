@@ -11,6 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ru.practicum.android.diploma.domain.filter.FilterSettings
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.domain.search.VacancySearchRequest
 import ru.practicum.android.diploma.domain.search.VacancySearchResult
@@ -144,7 +145,7 @@ class SearchViewModelGenerationTest {
         filters: MutableFilterRepository = MutableFilterRepository(),
     ): SearchViewModel = SearchViewModel(
         savedStateHandle = SavedStateHandle(),
-        vacancyRepository = repository,
+        searchInteractor = SearchVacanciesInteractorImpl(repository),
         filterSettingsRepository = filters,
         dispatcher = mainDispatcherRule.dispatcher,
         debounceMillis = SearchViewModel.DEFAULT_DEBOUNCE_MILLIS,

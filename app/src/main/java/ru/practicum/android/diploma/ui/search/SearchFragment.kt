@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.di.appContainer
 import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.presentation.search.SearchEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
@@ -37,7 +38,7 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels {
         val container = requireContext().appContainer
         SearchViewModelFactory(
-            vacancyRepository = container.vacancyRepository,
+            searchInteractor = container.searchInteractor,
             filterSettingsRepository = container.filterSettingsRepository,
         )
     }
@@ -141,10 +142,9 @@ class SearchFragment : Fragment() {
 }
 
 private class SearchViewModelFactory(
-    private val vacancyRepository: VacancyRepository,
+    private val searchInteractor: SearchVacanciesInteractor,
     private val filterSettingsRepository: FilterSettingsRepository,
 ) : ViewModelProvider.Factory {
-
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         require(modelClass == SearchViewModel::class.java) {
             "Unsupported ViewModel class: ${modelClass.name}"
@@ -152,7 +152,7 @@ private class SearchViewModelFactory(
         return modelClass.cast(
             SearchViewModel(
                 savedStateHandle = extras.createSavedStateHandle(),
-                vacancyRepository = vacancyRepository,
+                searchInteractor = searchInteractor,
                 filterSettingsRepository = filterSettingsRepository,
             ),
         )

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.DiplomaApplication
+import ru.practicum.android.diploma.data.favorites.FavoriteVacancyDatabase
+import ru.practicum.android.diploma.data.favorites.RoomFavoriteVacancyRepository
 import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.details.RetrofitVacancyDetailRepository
 import ru.practicum.android.diploma.data.favorites.FavoritesRepositoryImpl
@@ -12,17 +14,22 @@ import ru.practicum.android.diploma.data.filter.RetrofitCatalogRepository
 import ru.practicum.android.diploma.data.filter.SharedPreferencesFilterSettingsRepository
 import ru.practicum.android.diploma.data.network.NetworkClientFactory
 import ru.practicum.android.diploma.data.search.RetrofitVacancyRepository
+import ru.practicum.android.diploma.domain.favorites.FavoriteVacancyRepository
+import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
+import ru.practicum.android.diploma.domain.favorites.FavoritesInteractorImpl
 import ru.practicum.android.diploma.domain.details.FavoritesRepository
 import ru.practicum.android.diploma.domain.details.VacancyDetailRepository
 import ru.practicum.android.diploma.domain.filter.CatalogRepository
 import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 
 class AppContainer(context: Context) {
 
     private val applicationContext = context.applicationContext
     private val api by lazy {
-        NetworkClientFactory.createApi(BuildConfig.API_ACCESS_TOKEN)
+        NetworkClientFactory.createApi(applicationContext, BuildConfig.API_ACCESS_TOKEN)
     }
 
     private val database by lazy {
@@ -48,6 +55,26 @@ class AppContainer(context: Context) {
 
     val vacancyRepository: VacancyRepository by lazy {
         RetrofitVacancyRepository(api)
+    }
+
+    private val favoritesDatabase by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            FavoriteVacancyDatabase::class.java,
+            FavoriteVacancyDatabase.DATABASE_NAME,
+        ).build()
+    }
+
+    val favoriteVacancyRepository: FavoriteVacancyRepository by lazy {
+        RoomFavoriteVacancyRepository(favoritesDatabase.favoriteVacancyDao())
+    }
+
+    val searchInteractor: SearchVacanciesInteractor by lazy {
+        SearchVacanciesInteractorImpl(vacancyRepository)
+    }
+
+    val favoritesInteractor: FavoritesInteractor by lazy {
+        FavoritesInteractorImpl(favoriteVacancyRepository)
     }
 
     val vacancyDetailRepository: VacancyDetailRepository by lazy {

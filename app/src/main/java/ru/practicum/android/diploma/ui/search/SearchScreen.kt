@@ -2,11 +2,10 @@ package ru.practicum.android.diploma.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,20 +45,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.domain.search.VacancyCard
-import ru.practicum.android.diploma.domain.search.format
 import ru.practicum.android.diploma.presentation.search.SearchAction
 import ru.practicum.android.diploma.presentation.search.SearchResultUiState
 import ru.practicum.android.diploma.presentation.search.SearchUiState
 import ru.practicum.android.diploma.ui.components.ScreenHeader
 import ru.practicum.android.diploma.ui.components.UiTestTags
+import ru.practicum.android.diploma.ui.components.VacancyRow
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 @Composable
@@ -166,6 +162,7 @@ private fun SearchResult(
             onVacancyClicked = onVacancyClicked,
             modifier = modifier,
         )
+
         SearchResultUiState.Empty -> PlaceholderResult(
             image = R.drawable.search_empty_results,
             text = stringResource(R.string.search_results_error),
@@ -173,12 +170,14 @@ private fun SearchResult(
             testTag = UiTestTags.SEARCH_EMPTY,
             modifier = modifier,
         )
+
         is SearchResultUiState.NoInternet -> PlaceholderResult(
             image = R.drawable.search_no_internet,
             text = stringResource(R.string.search_no_internet),
             testTag = UiTestTags.SEARCH_NO_INTERNET,
             modifier = modifier,
         )
+
         is SearchResultUiState.Error -> PlaceholderResult(
             image = R.drawable.search_server_error,
             text = stringResource(R.string.search_server_error),
@@ -283,26 +282,21 @@ private fun ContentResult(
             .collect { onLoadNextPage() }
     }
 
-    Column(modifier = modifier.testTag(UiTestTags.SEARCH_RESULTS)) {
-        ResultChip(
-            text = pluralStringResource(
-                R.plurals.search_found_vacancies,
-                result.found,
-                result.found,
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 3.dp, bottom = 8.dp),
-        )
+
+    Box(modifier = modifier.testTag(UiTestTags.SEARCH_RESULTS)) {
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 44.dp),
         ) {
             itemsIndexed(
                 items = result.items,
                 key = { _, vacancy -> vacancy.id },
             ) { _, vacancy ->
-                VacancyRow(vacancy, onVacancyClicked)
+                VacancyRow(
+                    vacancy = vacancy,
+                    onClick = { onVacancyClicked(vacancy.id) },
+                )
             }
             if (result.isLoadingNextPage) {
                 item(key = "paging_loader") {
@@ -323,6 +317,16 @@ private fun ContentResult(
                 }
             }
         }
+        ResultChip(
+            text = pluralStringResource(
+                R.plurals.search_found_vacancies,
+                result.found,
+                result.found,
+            ),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 3.dp),
+        )
     }
 }
 
@@ -338,62 +342,6 @@ private fun ResultChip(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodyLarge,
         maxLines = 1,
     )
-}
-
-@Composable
-private fun VacancyRow(vacancy: VacancyCard, onVacancyClicked: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onVacancyClicked(vacancy.id) }
-            .padding(horizontal = 16.dp, vertical = 9.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        VacancyLogo(vacancy)
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = listOfNotNull(vacancy.name, vacancy.city).joinToString(", "),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.headlineSmall,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-            vacancy.company?.let { company ->
-                Text(
-                    text = company,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-            }
-            Text(
-                text = vacancy.salary?.format() ?: stringResource(R.string.salary_not_specified),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-    }
-}
-
-@Composable
-private fun VacancyLogo(vacancy: VacancyCard) {
-    val shape = RoundedCornerShape(12.dp)
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(shape)
-            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, shape),
-        contentAlignment = Alignment.Center,
-    ) {
-        AsyncImage(
-            model = vacancy.logo,
-            contentDescription = stringResource(R.string.search_company_logo_description),
-            placeholder = painterResource(R.drawable.search_logo_placeholder),
-            error = painterResource(R.drawable.search_logo_placeholder),
-            fallback = painterResource(R.drawable.search_logo_placeholder),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
 }
 
 @Composable

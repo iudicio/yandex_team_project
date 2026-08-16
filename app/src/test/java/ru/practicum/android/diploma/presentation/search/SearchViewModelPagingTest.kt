@@ -13,6 +13,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ru.practicum.android.diploma.domain.filter.FilterSettings
+import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.ManualVacancyRepository
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.MutableFilterRepository
 import ru.practicum.android.diploma.presentation.search.SearchViewModelTestFixture.QueueVacancyRepository
@@ -126,7 +127,7 @@ class SearchViewModelPagingTest {
         val repository = ManualVacancyRepository()
         val viewModel = SearchViewModel(
             savedStateHandle = SavedStateHandle(),
-            vacancyRepository = repository,
+            searchInteractor = SearchVacanciesInteractorImpl(repository),
             filterSettingsRepository = MutableFilterRepository(),
             dispatcher = mainDispatcherRule.dispatcher,
             debounceMillis = SearchViewModel.DEFAULT_DEBOUNCE_MILLIS,
@@ -175,7 +176,7 @@ class SearchViewModelPagingTest {
         filters: MutableFilterRepository = MutableFilterRepository(),
     ): SearchViewModel = SearchViewModel(
         savedStateHandle = SavedStateHandle(),
-        vacancyRepository = repository,
+        searchInteractor = SearchVacanciesInteractorImpl(repository),
         filterSettingsRepository = filters,
         dispatcher = mainDispatcherRule.dispatcher,
         debounceMillis = SearchViewModel.DEFAULT_DEBOUNCE_MILLIS,
