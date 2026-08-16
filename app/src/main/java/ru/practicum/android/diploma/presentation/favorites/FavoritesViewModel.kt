@@ -7,14 +7,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import ru.practicum.android.diploma.domain.favorites.FavoritesModel
-import ru.practicum.android.diploma.domain.favorites.InMemoryFavoritesModel
+import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 
 class FavoritesViewModel(
-    private val model: FavoritesModel = InMemoryFavoritesModel(),
+    private val interactor: FavoritesInteractor,
 ) : ViewModel() {
 
-    val state: StateFlow<FavoritesUiState> = model.observeFavorites()
+    val state: StateFlow<FavoritesUiState> = interactor.observeFavorites()
         .map { favorites ->
             if (favorites.isEmpty()) {
                 FavoritesUiState.Empty
