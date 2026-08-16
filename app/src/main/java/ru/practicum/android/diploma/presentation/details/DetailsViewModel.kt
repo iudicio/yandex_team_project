@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.domain.details.FavoritesRepository
-import ru.practicum.android.diploma.domain.details.VacancyDetailRepository
 import ru.practicum.android.diploma.domain.details.VacancyDetailResult
+import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractor
+import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
+import ru.practicum.android.diploma.domain.search.Salary
+import ru.practicum.android.diploma.domain.search.VacancyCard
+import kotlin.text.isNotBlank
 
 sealed class DetailsEvent {
     object NavigateBack : DetailsEvent()
@@ -24,8 +27,8 @@ sealed class DetailsEvent {
 class DetailsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val vacancyId: String,
-    private val vacancyDetailRepository: VacancyDetailRepository,
-    private val favoritesRepository: FavoritesRepository,
+    private val vacancyDetailsInteractor: VacancyDetailsInteractor,
+    private val favoritesInteractor: FavoritesInteractor,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailsUiState())
@@ -43,7 +46,7 @@ class DetailsViewModel(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
 
-            vacancyDetailRepository.getVacancy(vacancyId)
+            vacancyDetailsInteractor.getDetails(vacancyId)
                 .onSuccess { vacancy ->
                     _state.value = DetailsUiState(
                         isLoading = false,
@@ -78,14 +81,13 @@ class DetailsViewModel(
     }
 
     fun onFavoriteClicked() {
-        val vacancy = _state.value.vacancy ?: return
-
+        val vacancy = _state.value.vacancy?.toCard() ?: return
         viewModelScope.launch {
             val newFavoriteState = if (_state.value.isFavorite) {
-                favoritesRepository.removeFromFavorites(vacancyId)
+                favoritesInteractor.remove(vacancyId)
                 false
             } else {
-                favoritesRepository.addToFavorites(vacancy)
+                favoritesInteractor.add(vacancy)
                 true
             }
 
@@ -105,9 +107,26 @@ class DetailsViewModel(
         }
     }
 
+    private fun VacancyDetailResult.toCard(): VacancyCard {
+        return VacancyCard(
+            id = id,
+            name = name,
+            company = employer.name,
+            city = address?.city?.takeIf(String::isNotBlank),
+            salary = salary?.toDomain(),
+            logo = employer.logo.takeIf(String::isNotBlank),
+        )
+    }
+
+    private fun Salary.toDomain(): Salary = Salary(
+        from = from,
+        to = to,
+        currency = currency?.takeIf(String::isNotBlank),
+    )
+
     private fun checkFavoriteStatus() {
         viewModelScope.launch {
-            val isFavorite = favoritesRepository.isFavorite(vacancyId)
+            val isFavorite = favoritesInteractor.isFavorite(vacancyId)
             _state.value = _state.value.copy(isFavorite = isFavorite)
         }
     }

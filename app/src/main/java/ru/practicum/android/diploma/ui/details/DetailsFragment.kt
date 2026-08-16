@@ -24,9 +24,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.di.appContainer
-import ru.practicum.android.diploma.domain.details.FavoritesRepository
-import ru.practicum.android.diploma.domain.details.VacancyDetailRepository
 import ru.practicum.android.diploma.domain.details.VacancyDetailResult
+import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractor
+import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 import ru.practicum.android.diploma.presentation.details.DetailsEvent
 import ru.practicum.android.diploma.presentation.details.DetailsViewModel
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
@@ -37,8 +37,8 @@ class DetailsFragment : Fragment() {
         val container = requireContext().appContainer
         DetailsViewModelFactory(
             vacancyId = arguments?.getString(ARG_VACANCY_ID).orEmpty(),
-            vacancyDetailRepository = container.vacancyDetailRepository,
-            favoritesRepository = container.favoritesRepository,
+            vacancyDetailsInteractor = container.vacancyDetailsInteractor,
+            favoritesInteractor = container.favoritesInteractor,
         )
     }
 
@@ -181,8 +181,8 @@ class DetailsFragment : Fragment() {
 
 private class DetailsViewModelFactory(
     private val vacancyId: String,
-    private val vacancyDetailRepository: VacancyDetailRepository,
-    private val favoritesRepository: FavoritesRepository,
+    private val vacancyDetailsInteractor: VacancyDetailsInteractor,
+    private val favoritesInteractor: FavoritesInteractor,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
@@ -193,8 +193,8 @@ private class DetailsViewModelFactory(
             DetailsViewModel(
                 savedStateHandle = extras.createSavedStateHandle(),
                 vacancyId = vacancyId,
-                vacancyDetailRepository = vacancyDetailRepository,
-                favoritesRepository = favoritesRepository,
+                vacancyDetailsInteractor = vacancyDetailsInteractor,
+                favoritesInteractor = favoritesInteractor,
             ),
         )
     }
