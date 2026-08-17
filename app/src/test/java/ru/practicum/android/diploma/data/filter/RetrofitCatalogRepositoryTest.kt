@@ -251,7 +251,7 @@ class RetrofitCatalogRepositoryTest {
                 employmentId = null,
                 employmentName = null,
                 contactsJson = null,
-                employerJson = """{"id":"e1","name":"Cached Corp","logo":null}""",
+                employerJson = """{"id":"e1","name":"Cached Corp","logo":""}""",
                 areaJson = null,
                 skillsJson = "[]",
                 url = "https://vacancy/123",
