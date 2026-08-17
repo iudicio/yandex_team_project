@@ -107,7 +107,12 @@ class RetrofitVacancyRepositoryTest {
     @Test
     fun `negative response counters are normalized to zero`() = runBlocking {
         val api = FakeDiplomaApi(
-            response = VacancyResponseDto(found = -1, pages = -2, page = 1, items = emptyList()),
+            response = VacancyResponseDto(
+                found = -1,
+                pages = -2,
+                page = 1,
+                items = emptyList(),
+            ),
         )
         val repository = RetrofitVacancyRepository(api, Dispatchers.Unconfined)
 

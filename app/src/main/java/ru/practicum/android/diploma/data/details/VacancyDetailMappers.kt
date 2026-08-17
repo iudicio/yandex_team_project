@@ -37,7 +37,7 @@ internal fun VacancyDetailResponseDto.toDomain(): VacancyDetailResult {
         contacts = contacts?.toDomain(),
         employer = employer.toDomain(),
         area = area.toDomain(null),
-        skills = skills.orEmpty(),
+        skills = skills,
         url = url,
         industry = industry.toDomain(),
     )
@@ -116,16 +116,22 @@ internal fun FavoriteVacancyEntity.toDetail(gson: Gson): VacancyDetailResult = V
     description = description,
     salary = salaryJson?.let { gson.fromJson(it, SalaryDto::class.java).toDomain() },
     address = addressJson?.let { gson.fromJson(it, AddressDto::class.java).toDomain() },
-    experience = if (experienceId != null && experienceName != null) BaseDetailData(experienceId, experienceName) else null,
-    schedule = if (scheduleId != null && scheduleName != null) BaseDetailData(scheduleId, scheduleName) else null,
-    employment = if (employmentId != null && employmentName != null) BaseDetailData(employmentId, employmentName) else null,
+    experience = baseDetailDataOrNull(experienceId, experienceName),
+    schedule = baseDetailDataOrNull(scheduleId, scheduleName),
+    employment = baseDetailDataOrNull(employmentId, employmentName),
     contacts = contactsJson?.let { gson.fromJson(it, ContactsDto::class.java).toDomain() },
     employer = gson.fromJson(employerJson, EmployerDto::class.java).toDomain(),
     area = areaJson?.let { gson.fromJson(it, AreaDto::class.java).toDomain(null) },
     skills = gson.fromJson(skillsJson, Array<String>::class.java)?.toList().orEmpty(),
     url = url,
-    industry = if (industryId != null && industryName != null) Industry(industryId, industryName) else null,
+    industry = industryOrNull(industryId, industryName),
 )
+
+private fun baseDetailDataOrNull(id: String?, name: String?): BaseDetailData? =
+    if (id != null && name != null) BaseDetailData(id = id, name = name) else null
+
+private fun industryOrNull(id: String?, name: String?): Industry? =
+    if (id != null && name != null) Industry(id = id, name = name) else null
 
 internal fun FavoriteVacancyEntity.toCard(gson: Gson): FavoriteVacancy {
     val employer = gson.fromJson(employerJson, EmployerDto::class.java)
