@@ -13,6 +13,7 @@ import ru.practicum.android.diploma.data.network.dto.AreaDto
 import ru.practicum.android.diploma.data.network.dto.IndustryDto
 import ru.practicum.android.diploma.data.network.dto.VacancyCardDto
 import ru.practicum.android.diploma.data.network.dto.VacancyCardSalaryDto
+import ru.practicum.android.diploma.data.network.dto.VacancyDetailResponseDto
 import ru.practicum.android.diploma.data.network.dto.VacancyResponseDto
 import ru.practicum.android.diploma.domain.search.Salary
 import ru.practicum.android.diploma.domain.search.VacancyCard
@@ -182,6 +183,8 @@ private class FakeDiplomaApi(
     override suspend fun getAreas(): List<AreaDto> = error("Areas are not used by search tests")
 
     override suspend fun getIndustries(): List<IndustryDto> = error("Industries are not used by search tests")
+
+    override suspend fun getVacancy(id: String): VacancyDetailResponseDto = error("Vacancy detail is not used by search tests")
 
     override suspend fun searchVacancies(
         text: String,

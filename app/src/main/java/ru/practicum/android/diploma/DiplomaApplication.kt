@@ -9,14 +9,18 @@ import coil3.svg.SvgDecoder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import ru.practicum.android.diploma.di.AppContainer
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
+import ru.practicum.android.diploma.di.appModules
 
 class DiplomaApplication : Application(), SingletonImageLoader.Factory {
 
-    val appContainer: AppContainer by lazy { AppContainer(this) }
-
     override fun onCreate() {
         super.onCreate()
+        startKoin {
+            androidContext(this@DiplomaApplication)
+            modules(appModules)
+        }
     }
 
     override fun newImageLoader(context: Context): ImageLoader {
