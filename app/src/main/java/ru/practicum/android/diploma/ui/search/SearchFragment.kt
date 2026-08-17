@@ -28,6 +28,7 @@ import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.presentation.search.SearchEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.details.DetailsFragment
 import ru.practicum.android.diploma.ui.filter.FilterFragment
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 import java.io.IOException
@@ -69,6 +70,7 @@ class SearchFragment : Fragment() {
                     onFilterClicked = ::openFilters,
                     onLoadNextPage = viewModel::loadNextPage,
                     hasActiveFilters = hasActiveFilters.value,
+                    onVacancyClicked = ::openVacancy
                 )
             }
         }
@@ -126,6 +128,15 @@ class SearchFragment : Fragment() {
         val navController = findNavController()
         if (navController.currentDestination?.id == R.id.navigationHome) {
             navController.navigate(R.id.action_navigationHome_to_navigationFilter)
+        }
+    }
+    private fun openVacancy(id: String) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id == R.id.navigationHome) {
+            val bundle = Bundle().apply {
+                putString(DetailsFragment.ARG_VACANCY_ID, id)
+            }
+            navController.navigate(R.id.detailsFragment, bundle)
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.DiplomaApplication
+import ru.practicum.android.diploma.data.details.RetrofitVacancyDetailRepository
 import ru.practicum.android.diploma.data.favorites.FavoriteVacancyDatabase
 import ru.practicum.android.diploma.data.favorites.RoomFavoriteVacancyRepository
 import ru.practicum.android.diploma.data.filter.FILTER_SETTINGS_PREFERENCES_NAME
@@ -11,6 +12,9 @@ import ru.practicum.android.diploma.data.filter.RetrofitCatalogRepository
 import ru.practicum.android.diploma.data.filter.SharedPreferencesFilterSettingsRepository
 import ru.practicum.android.diploma.data.network.NetworkClientFactory
 import ru.practicum.android.diploma.data.search.RetrofitVacancyRepository
+import ru.practicum.android.diploma.domain.details.VacancyDetailRepository
+import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractor
+import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractorImpl
 import ru.practicum.android.diploma.domain.favorites.FavoriteVacancyRepository
 import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 import ru.practicum.android.diploma.domain.favorites.FavoritesInteractorImpl
@@ -26,6 +30,7 @@ class AppContainer(context: Context) {
     private val api by lazy {
         NetworkClientFactory.createApi(applicationContext, BuildConfig.API_ACCESS_TOKEN)
     }
+
 
     val filterSettingsRepository: FilterSettingsRepository by lazy {
         SharedPreferencesFilterSettingsRepository(
@@ -60,8 +65,15 @@ class AppContainer(context: Context) {
         SearchVacanciesInteractorImpl(vacancyRepository)
     }
 
+    val vacancyDetailsInteractor: VacancyDetailsInteractor by lazy {
+        VacancyDetailsInteractorImpl(vacancyDetailRepository)
+    }
     val favoritesInteractor: FavoritesInteractor by lazy {
         FavoritesInteractorImpl(favoriteVacancyRepository)
+    }
+
+    val vacancyDetailRepository: VacancyDetailRepository by lazy {
+        RetrofitVacancyDetailRepository(api)
     }
 }
 

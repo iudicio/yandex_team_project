@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_navigationHome_to_navigationFilter"
             app:destination="@id/navigationFilter" />
+        <action
+            android:id="@+id/action_navigationHome_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
 
     <fragment
@@ -74,11 +77,24 @@
     <fragment
         android:id="@+id/navigationFavorites"
         android:name="ru.practicum.android.diploma.ui.favorites.FavoritesFragment"
-        android:label="@string/navigation_favorites" />
+        android:label="@string/navigation_favorites" >
+        <action
+            android:id="@+id/action_navigationFavorites_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigationTeam"
         android:name="ru.practicum.android.diploma.ui.team.TeamFragment"
         android:label="@string/navigation_team" />
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="ru.practicum.android.diploma.ui.details.DetailsFragment"
+        android:label="DetailsFragment">
+        <argument
+            android:name="vacancy_id"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

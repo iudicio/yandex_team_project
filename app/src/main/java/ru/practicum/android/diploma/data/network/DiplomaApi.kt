@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.data.network
 
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.practicum.android.diploma.data.network.dto.AreaDto
 import ru.practicum.android.diploma.data.network.dto.IndustryDto
+import ru.practicum.android.diploma.data.network.dto.VacancyDetailResponseDto
 import ru.practicum.android.diploma.data.network.dto.VacancyResponseDto
 
 interface DiplomaApi {
@@ -22,4 +24,8 @@ interface DiplomaApi {
         @Query("page") page: Int? = null,
         @Query("only_with_salary") onlyWithSalary: Boolean? = null,
     ): VacancyResponseDto
+
+    @GET("vacancies/{vacancyId}")
+    suspend fun getVacancy(@Path("vacancyId") id: String): VacancyDetailResponseDto
+
 }

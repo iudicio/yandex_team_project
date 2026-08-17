@@ -4,15 +4,24 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import ru.practicum.android.diploma.data.details.RetrofitVacancyDetailRepository
 import ru.practicum.android.diploma.data.network.DiplomaApi
+import ru.practicum.android.diploma.data.network.dto.AddressDto
 import ru.practicum.android.diploma.data.network.dto.AreaDto
+import ru.practicum.android.diploma.data.network.dto.BaseDetailDataDto
+import ru.practicum.android.diploma.data.network.dto.ContactsDto
+import ru.practicum.android.diploma.data.network.dto.EmployerDto
 import ru.practicum.android.diploma.data.network.dto.IndustryDto
+import ru.practicum.android.diploma.data.network.dto.SalaryDto
+import ru.practicum.android.diploma.data.network.dto.VacancyDetailResponseDto
 import ru.practicum.android.diploma.data.network.dto.VacancyResponseDto
 import ru.practicum.android.diploma.domain.filter.AreaSelection
 import ru.practicum.android.diploma.domain.filter.Industry
 import ru.practicum.android.diploma.domain.filter.RegionSelection
+import java.io.IOException
 
 class RetrofitCatalogRepositoryTest {
 
@@ -179,12 +188,60 @@ class RetrofitCatalogRepositoryTest {
                 page: Int?,
                 onlyWithSalary: Boolean?,
             ): VacancyResponseDto = error("Search is not used by catalog tests")
+
+            override suspend fun getVacancy(id: String): VacancyDetailResponseDto {
+                TODO("Not yet implemented")
+            }
         }
         val repository = RetrofitCatalogRepository(api)
 
         assertSame(expected, repository.getCountries().exceptionOrNull())
         assertEquals(2, repository.getCountries().getOrThrow().size)
         assertEquals(2, calls)
+    }
+
+    @Test
+    fun `vacancy detail returns expected data`() = runBlocking {
+        val expectedVacancy = VacancyDetailResponseDto(
+            id = "123",
+            name = "Разработчик Kotlin",
+            description = "Some desc",
+            salary = SalaryDto(1,2, "Р"),
+            address = AddressDto("123", "", " ", " 2", "2"),
+            experience = BaseDetailDataDto("1","2"),
+            schedule = BaseDetailDataDto("1","2"),
+            employment = BaseDetailDataDto("1","2"),
+            contacts = null,
+            employer = EmployerDto("","",""),
+            area = AreaDto(1,"",2, null),
+            skills = emptyList(),
+            url = "TODO()",
+            industry = IndustryDto(1, "1"),
+        )
+        val api = FakeDiplomaApi(
+            vacancyDetail = expectedVacancy
+        )
+        val repository = RetrofitVacancyDetailRepository(api)
+
+        val result = repository.getVacancy("123")
+
+        assertEquals(expectedVacancy, result)
+        assertEquals(1, api.vacancyRequests)
+    }
+
+    @Test
+    fun `vacancy detail handles errors`() = runBlocking {
+        val expectedError = IOException("Network error")
+        val api = FakeDiplomaApi(
+            vacancyFailure = expectedError
+        )
+        val repository = RetrofitVacancyDetailRepository(api)
+
+        val exception = assertThrows(IOException::class.java) {
+            runBlocking { repository.getVacancy("123") }
+        }
+
+        assertEquals(expectedError, exception)
     }
 
     @Test
@@ -223,9 +280,12 @@ private class FakeDiplomaApi(
     private val industries: List<IndustryDto> = emptyList(),
     private val areaFailure: Throwable? = null,
     private val industryFailure: Throwable? = null,
+    private val vacancyDetail: VacancyDetailResponseDto? = null,
+    private val vacancyFailure: Throwable? = null,
 ) : DiplomaApi {
     var areaRequests = 0
     var industryRequests = 0
+    var vacancyRequests = 0
 
     override suspend fun getAreas(): List<AreaDto> {
         areaRequests += 1
@@ -247,6 +307,12 @@ private class FakeDiplomaApi(
         page: Int?,
         onlyWithSalary: Boolean?,
     ): VacancyResponseDto = error("Search is not used by catalog tests")
+
+    override suspend fun getVacancy(id: String): VacancyDetailResponseDto {
+        vacancyRequests += 1
+        vacancyFailure?.let { throwable -> throw throwable }
+        return vacancyDetail ?: error("Vacancy detail not provided for id: $id")
+    }
 }
 
 private const val RUSSIA_ID = 1
