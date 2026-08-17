@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="background_primary">#FDFDFD</color>
+    <color name="text_primary">#1A1B22</color>
+    <color name="search_surface">#E6E8EB</color>
+    <color name="search_hint">#AEAFB4</color>
+    <color name="search_icon">#1A1B22</color>
+    <color name="navigation_inactive">#C1C2C6</color>
+    <color name="accent">#3772E7</color>
+    <color name="destructive">#F56B6C</color>
 </resources>

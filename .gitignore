@@ -11,10 +11,17 @@
 /.idea/gradle.xml
 /.idea/compiler.xml
 /.idea/misc.xml
+/.idea/AndroidProjectSystem.xml
+/.idea/runConfigurations.xml
+/.idea/migrations.xml
+/.idea/deploymentTargetSelector.xml
 
 # Gradle files
 .gradle/
+/.kotlin/
+**/.kotlin/
 build/
+**/bin/
 out/
 
 # Local configuration file (sdk path, etc)

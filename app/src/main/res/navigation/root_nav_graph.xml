@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootNavGraph"
+    app:startDestination="@id/navigationHome">
+
+    <fragment
+        android:id="@+id/navigationHome"
+        android:name="ru.practicum.android.diploma.ui.search.SearchFragment"
+        android:label="@string/navigation_home">
+        <action
+            android:id="@+id/action_navigationHome_to_navigationFilter"
+            app:destination="@id/navigationFilter" />
+        <action
+            android:id="@+id/action_navigationHome_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationFilter"
+        android:name="ru.practicum.android.diploma.ui.filter.FilterFragment"
+        android:label="@string/filter_title">
+        <action
+            android:id="@+id/action_navigationFilter_to_navigationWorkplace"
+            app:destination="@id/navigationWorkplace" />
+        <action
+            android:id="@+id/action_navigationFilter_to_navigationIndustry"
+            app:destination="@id/navigationIndustry" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationWorkplace"
+        android:name="ru.practicum.android.diploma.ui.filter.WorkplaceFragment"
+        android:label="@string/filter_workplace_title">
+        <action
+            android:id="@+id/action_navigationWorkplace_to_navigationCountry"
+            app:destination="@id/navigationCountry" />
+        <action
+            android:id="@+id/action_navigationWorkplace_to_navigationRegion"
+            app:destination="@id/navigationRegion" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationCountry"
+        android:name="ru.practicum.android.diploma.ui.filter.CountryFragment"
+        android:label="@string/filter_country_title">
+        <argument
+            android:name="countryId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationRegion"
+        android:name="ru.practicum.android.diploma.ui.filter.RegionFragment"
+        android:label="@string/filter_region_title">
+        <argument
+            android:name="countryId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="regionId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationIndustry"
+        android:name="ru.practicum.android.diploma.ui.filter.IndustryFragment"
+        android:label="@string/filter_industry_title">
+        <argument
+            android:name="industryId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationFavorites"
+        android:name="ru.practicum.android.diploma.ui.favorites.FavoritesFragment"
+        android:label="@string/navigation_favorites" >
+        <action
+            android:id="@+id/action_navigationFavorites_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationTeam"
+        android:name="ru.practicum.android.diploma.ui.team.TeamFragment"
+        android:label="@string/navigation_team" />
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="ru.practicum.android.diploma.ui.details.DetailsFragment"
+        android:label="DetailsFragment">
+        <argument
+            android:name="vacancy_id"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

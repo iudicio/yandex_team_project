@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_primary">#1A1B22</color>
+    <color name="text_primary">#FDFDFD</color>
+    <color name="search_surface">#AEAFB4</color>
+    <color name="search_hint">#FDFDFD</color>
+    <color name="search_icon">#1A1B22</color>
+    <color name="navigation_inactive">#C1C2C6</color>
+    <color name="accent">#3772E7</color>
+    <color name="destructive">#F56B6C</color>
+</resources>

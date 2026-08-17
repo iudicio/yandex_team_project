@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_horizontal_margin">16dp</dimen>
+    <dimen name="search_toolbar_height">64dp</dimen>
+    <dimen name="search_title_text_size">22sp</dimen>
+    <dimen name="search_field_top_margin">8dp</dimen>
+    <dimen name="search_field_height">56dp</dimen>
+    <dimen name="search_field_corner_radius">12dp</dimen>
+    <dimen name="search_field_horizontal_padding">16dp</dimen>
+    <dimen name="search_field_action_space">48dp</dimen>
+    <dimen name="search_field_text_size">16sp</dimen>
+    <dimen name="search_initial_illustration_height">223dp</dimen>
+    <dimen name="icon_touch_target">48dp</dimen>
+    <dimen name="icon_inner_padding">12dp</dimen>
+    <dimen name="icon_button_edge_margin">8dp</dimen>
+    <dimen name="search_action_end_margin">4dp</dimen>
+    <dimen name="navigation_icon_size">24dp</dimen>
+    <dimen name="bottom_navigation_height">64dp</dimen>
+</resources>

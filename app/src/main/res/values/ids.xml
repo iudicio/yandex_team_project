@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="search_compose_view" type="id" />
+    <item name="favorites_compose_view" type="id" />
+    <item name="team_compose_view" type="id" />
+    <item name="filter_compose_view" type="id" />
+    <item name="workplace_compose_view" type="id" />
+    <item name="country_compose_view" type="id" />
+    <item name="region_compose_view" type="id" />
+    <item name="industry_compose_view" type="id" />
+    <item name="details_compose_view" type="id" />
+</resources>
