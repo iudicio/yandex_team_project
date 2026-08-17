@@ -51,13 +51,13 @@ class DetailsViewModel(
                     _state.value = DetailsUiState(
                         isLoading = false,
                         vacancy = vacancy,
-                        isFavorite = _state.value.isFavorite
+                        isFavorite = _state.value.isFavorite,
                     )
                 }
                 .onFailure { error ->
                     _state.value = DetailsUiState(
                         isLoading = false,
-                        error = error.message ?: "Не удалось загрузить вакансию"
+                        error = error.message ?: "Не удалось загрузить вакансию",
                     )
                 }
         }
@@ -81,7 +81,7 @@ class DetailsViewModel(
     }
 
     fun onFavoriteClicked() {
-        val vacancy = _state.value.vacancy?.toCard() ?: return
+        val vacancy = _state.value.vacancy ?: return
         viewModelScope.launch {
             val newFavoriteState = if (_state.value.isFavorite) {
                 favoritesInteractor.remove(vacancyId)
@@ -90,7 +90,6 @@ class DetailsViewModel(
                 favoritesInteractor.add(vacancy)
                 true
             }
-
             _state.value = _state.value.copy(isFavorite = newFavoriteState)
         }
     }
@@ -106,23 +105,6 @@ class DetailsViewModel(
             _events.emit(DetailsEvent.SendEmail(email))
         }
     }
-
-    private fun VacancyDetailResult.toCard(): VacancyCard {
-        return VacancyCard(
-            id = id,
-            name = name,
-            company = employer.name,
-            city = address?.city?.takeIf(String::isNotBlank),
-            salary = salary?.toDomain(),
-            logo = employer.logo.takeIf(String::isNotBlank),
-        )
-    }
-
-    private fun Salary.toDomain(): Salary = Salary(
-        from = from,
-        to = to,
-        currency = currency?.takeIf(String::isNotBlank),
-    )
 
     private fun checkFavoriteStatus() {
         viewModelScope.launch {

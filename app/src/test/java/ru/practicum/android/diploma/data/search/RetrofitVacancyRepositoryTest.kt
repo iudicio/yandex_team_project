@@ -13,6 +13,7 @@ import ru.practicum.android.diploma.data.network.dto.AreaDto
 import ru.practicum.android.diploma.data.network.dto.IndustryDto
 import ru.practicum.android.diploma.data.network.dto.VacancyCardDto
 import ru.practicum.android.diploma.data.network.dto.VacancyCardSalaryDto
+import ru.practicum.android.diploma.data.network.dto.VacancyDetailResponseDto
 import ru.practicum.android.diploma.data.network.dto.VacancyResponseDto
 import ru.practicum.android.diploma.domain.search.Salary
 import ru.practicum.android.diploma.domain.search.VacancyCard
@@ -106,7 +107,12 @@ class RetrofitVacancyRepositoryTest {
     @Test
     fun `negative response counters are normalized to zero`() = runBlocking {
         val api = FakeDiplomaApi(
-            response = VacancyResponseDto(found = -1, pages = -2, page = 1, items = emptyList()),
+            response = VacancyResponseDto(
+                found = -1,
+                pages = -2,
+                page = 1,
+                items = emptyList(),
+            ),
         )
         val repository = RetrofitVacancyRepository(api, Dispatchers.Unconfined)
 
@@ -182,6 +188,8 @@ private class FakeDiplomaApi(
     override suspend fun getAreas(): List<AreaDto> = error("Areas are not used by search tests")
 
     override suspend fun getIndustries(): List<IndustryDto> = error("Industries are not used by search tests")
+
+    override suspend fun getVacancy(id: String): VacancyDetailResponseDto = error("Vacancy detail is not used by search tests")
 
     override suspend fun searchVacancies(
         text: String,

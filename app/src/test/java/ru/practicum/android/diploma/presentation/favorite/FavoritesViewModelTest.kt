@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
+import ru.practicum.android.diploma.domain.details.VacancyDetailResult
 import ru.practicum.android.diploma.domain.favorites.FavoriteVacancy
 import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 import ru.practicum.android.diploma.domain.search.Salary
@@ -74,7 +75,7 @@ class FavoritesViewModelTest {
 
         override suspend fun isFavorite(id: String): Boolean = favorites.any { it.id == id }
 
-        override suspend fun add(vacancy: FavoriteVacancy) = Unit
+        override suspend fun add(vacancy: VacancyDetailResult) = Unit
 
         override suspend fun remove(id: String) = Unit
     }

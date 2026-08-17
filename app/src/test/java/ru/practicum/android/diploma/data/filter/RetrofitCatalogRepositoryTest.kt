@@ -1,18 +1,20 @@
 package ru.practicum.android.diploma.data.filter
 
+import com.google.gson.Gson
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import ru.practicum.android.diploma.data.db.dao.FavoriteVacancyDao
+import ru.practicum.android.diploma.data.db.entity.FavoriteVacancyEntity
 import ru.practicum.android.diploma.data.details.RetrofitVacancyDetailRepository
 import ru.practicum.android.diploma.data.network.DiplomaApi
-import ru.practicum.android.diploma.data.network.dto.AddressDto
 import ru.practicum.android.diploma.data.network.dto.AreaDto
-import ru.practicum.android.diploma.data.network.dto.BaseDetailDataDto
-import ru.practicum.android.diploma.data.network.dto.ContactsDto
 import ru.practicum.android.diploma.data.network.dto.EmployerDto
 import ru.practicum.android.diploma.data.network.dto.IndustryDto
 import ru.practicum.android.diploma.data.network.dto.SalaryDto
@@ -52,24 +54,9 @@ class RetrofitCatalogRepositoryTest {
 
         assertEquals(
             listOf(
-                RegionSelection(
-                    id = MINSK_ID,
-                    name = MINSK,
-                    countryId = BELARUS_ID,
-                    countryName = BELARUS,
-                ),
-                RegionSelection(
-                    id = MOSCOW_ID,
-                    name = MOSCOW,
-                    countryId = RUSSIA_ID,
-                    countryName = RUSSIA,
-                ),
-                RegionSelection(
-                    id = TULA_ID,
-                    name = TULA,
-                    countryId = RUSSIA_ID,
-                    countryName = RUSSIA,
-                ),
+                RegionSelection(id = MINSK_ID, name = MINSK, countryId = BELARUS_ID, countryName = BELARUS),
+                RegionSelection(id = MOSCOW_ID, name = MOSCOW, countryId = RUSSIA_ID, countryName = RUSSIA),
+                RegionSelection(id = TULA_ID, name = TULA, countryId = RUSSIA_ID, countryName = RUSSIA),
                 RegionSelection(
                     id = CENTRAL_DISTRICT_ID,
                     name = CENTRAL_DISTRICT,
@@ -87,10 +74,7 @@ class RetrofitCatalogRepositoryTest {
 
         val regions = repository.getRegions(countryId = RUSSIA_ID).getOrThrow()
 
-        assertEquals(
-            listOf(MOSCOW_ID, TULA_ID, CENTRAL_DISTRICT_ID),
-            regions.map(RegionSelection::id),
-        )
+        assertEquals(listOf(MOSCOW_ID, TULA_ID, CENTRAL_DISTRICT_ID), regions.map(RegionSelection::id))
         assertTrue(regions.all { region -> region.countryId == RUSSIA_ID })
         assertTrue(repository.getRegions(countryId = UNKNOWN_COUNTRY_ID).getOrThrow().isEmpty())
     }
@@ -101,10 +85,10 @@ class RetrofitCatalogRepositoryTest {
             if (country.id == RUSSIA_ID) {
                 country.copy(
                     areas = country.areas.orEmpty() + AreaDto(
-                        MOSCOW_ID,
-                        "Дубликат Москвы",
-                        RUSSIA_ID,
-                        emptyList(),
+                        id = MOSCOW_ID,
+                        name = "Дубликат Москвы",
+                        parentId = RUSSIA_ID,
+                        areas = emptyList(),
                     ),
                 )
             } else {
@@ -172,9 +156,7 @@ class RetrofitCatalogRepositoryTest {
         val api = object : DiplomaApi {
             override suspend fun getAreas(): List<AreaDto> {
                 calls += 1
-                if (calls == 1) {
-                    throw expected
-                }
+                if (calls == 1) throw expected
                 return AREA_TREE
             }
 
@@ -189,9 +171,8 @@ class RetrofitCatalogRepositoryTest {
                 onlyWithSalary: Boolean?,
             ): VacancyResponseDto = error("Search is not used by catalog tests")
 
-            override suspend fun getVacancy(id: String): VacancyDetailResponseDto {
-                TODO("Not yet implemented")
-            }
+            override suspend fun getVacancy(id: String): VacancyDetailResponseDto =
+                error("Vacancy detail is not used by this test")
         }
         val repository = RetrofitCatalogRepository(api)
 
@@ -202,46 +183,93 @@ class RetrofitCatalogRepositoryTest {
 
     @Test
     fun `vacancy detail returns expected data`() = runBlocking {
-        val expectedVacancy = VacancyDetailResponseDto(
-            id = "123",
-            name = "Разработчик Kotlin",
-            description = "Some desc",
-            salary = SalaryDto(1,2, "Р"),
-            address = AddressDto("123", "", " ", " 2", "2"),
-            experience = BaseDetailDataDto("1","2"),
-            schedule = BaseDetailDataDto("1","2"),
-            employment = BaseDetailDataDto("1","2"),
-            contacts = null,
-            employer = EmployerDto("","",""),
-            area = AreaDto(1,"",2, null),
-            skills = emptyList(),
-            url = "TODO()",
-            industry = IndustryDto(1, "1"),
-        )
         val api = FakeDiplomaApi(
-            vacancyDetail = expectedVacancy
+            vacancyDetail = VacancyDetailResponseDto(
+                id = "123",
+                name = "Разработчик Kotlin",
+                description = "Some desc",
+                salary = SalaryDto(1, 2, "Р"),
+                address = null,
+                experience = null,
+                schedule = null,
+                employment = null,
+                contacts = null,
+                employer = EmployerDto(id = "e1", name = "Company", logo = ""),
+                area = AreaDto(id = 1, name = "Москва", parentId = null, areas = null),
+                skills = emptyList(),
+                url = "https://vacancy/123",
+                industry = IndustryDto(id = 7, name = "IT"),
+            ),
         )
-        val repository = RetrofitVacancyDetailRepository(api)
+        val repository = RetrofitVacancyDetailRepository(
+            api,
+            FakeFavoriteVacancyDao(),
+            Gson(),
+            Dispatchers.Unconfined,
+        )
 
-        val result = repository.getVacancy("123")
+        val result = repository.getVacancy("123").getOrThrow()
 
-        assertEquals(expectedVacancy, result)
+        assertEquals("123", result.id)
+        assertEquals("Разработчик Kotlin", result.name)
+        assertEquals("Company", result.employer.name)
+        assertEquals("Москва", result.area?.name)
+        assertEquals("IT", result.industry?.name)
         assertEquals(1, api.vacancyRequests)
     }
 
     @Test
-    fun `vacancy detail handles errors`() = runBlocking {
-        val expectedError = IOException("Network error")
-        val api = FakeDiplomaApi(
-            vacancyFailure = expectedError
+    fun `vacancy detail failure without cache is result failure`() = runBlocking {
+        val expected = IOException("Network error")
+        val repository = RetrofitVacancyDetailRepository(
+            FakeDiplomaApi(vacancyFailure = expected),
+            FakeFavoriteVacancyDao(),
+            Gson(),
+            Dispatchers.Unconfined,
         )
-        val repository = RetrofitVacancyDetailRepository(api)
 
-        val exception = assertThrows(IOException::class.java) {
-            runBlocking { repository.getVacancy("123") }
-        }
+        val result = repository.getVacancy("123")
 
-        assertEquals(expectedError, exception)
+        assertTrue(result.isFailure)
+        assertEquals(expected, result.exceptionOrNull())
+    }
+
+    @Test
+    fun `vacancy detail falls back to cached favorite when offline`() = runBlocking {
+        val dao = FakeFavoriteVacancyDao()
+        dao.insert(
+            FavoriteVacancyEntity(
+                id = "123",
+                name = "Cached vacancy",
+                description = "desc",
+                salaryJson = null,
+                addressJson = null,
+                experienceId = null,
+                experienceName = null,
+                scheduleId = null,
+                scheduleName = null,
+                employmentId = null,
+                employmentName = null,
+                contactsJson = null,
+                employerJson = """{"id":"e1","name":"Cached Corp","logo":""}""",
+                areaJson = null,
+                skillsJson = "[]",
+                url = "https://vacancy/123",
+                industryId = null,
+                industryName = null,
+            ),
+        )
+        val repository = RetrofitVacancyDetailRepository(
+            FakeDiplomaApi(vacancyFailure = IOException("offline")),
+            dao,
+            Gson(),
+            Dispatchers.Unconfined,
+        )
+
+        val result = repository.getVacancy("123").getOrThrow()
+
+        assertEquals("Cached vacancy", result.name)
+        assertEquals("Cached Corp", result.employer.name)
     }
 
     @Test
@@ -273,6 +301,24 @@ class RetrofitCatalogRepositoryTest {
 
         assertEquals(expected.message, actual?.message)
     }
+}
+
+private class FakeFavoriteVacancyDao : FavoriteVacancyDao {
+    private val storage = linkedMapOf<String, FavoriteVacancyEntity>()
+
+    override suspend fun insert(vacancy: FavoriteVacancyEntity) {
+        storage[vacancy.id] = vacancy
+    }
+
+    override suspend fun getById(vacancyId: String): FavoriteVacancyEntity? = storage[vacancyId]
+
+    override fun getAll(): Flow<List<FavoriteVacancyEntity>> = flowOf(storage.values.toList())
+
+    override suspend fun deleteById(vacancyId: String) {
+        storage.remove(vacancyId)
+    }
+
+    override suspend fun getCountById(vacancyId: String): Int = if (storage.containsKey(vacancyId)) 1 else 0
 }
 
 private class FakeDiplomaApi(

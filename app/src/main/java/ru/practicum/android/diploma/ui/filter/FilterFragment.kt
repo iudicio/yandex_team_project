@@ -8,26 +8,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.di.appContainer
-import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
 import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 class FilterFragment : Fragment() {
 
-    private val repository: FilterSettingsRepository by lazy {
-        requireContext().appContainer.filterSettingsRepository
-    }
-
-    private val viewModel: FilterViewModel by viewModels {
-        FilterViewModelFactory(repository)
-    }
+    private val viewModel: FilterViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,17 +96,5 @@ class FilterFragment : Fragment() {
 
     companion object {
         const val FILTERS_APPLIED_RESULT_KEY = "filters_applied"
-    }
-}
-
-private class FilterViewModelFactory(
-    private val repository: FilterSettingsRepository,
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        require(modelClass == FilterViewModel::class.java) {
-            "Unsupported ViewModel class: ${modelClass.name}"
-        }
-        return modelClass.cast(FilterViewModel(repository))
     }
 }

@@ -1,66 +1,101 @@
 package ru.practicum.android.diploma.data.favorite
 
+import com.google.gson.Gson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
-import ru.practicum.android.diploma.data.favorites.FavoriteVacancyEntity
-import ru.practicum.android.diploma.data.favorites.toDomain
-import ru.practicum.android.diploma.data.favorites.toEntity
-import ru.practicum.android.diploma.domain.favorites.FavoriteVacancy
+import ru.practicum.android.diploma.data.db.entity.FavoriteVacancyEntity
+import ru.practicum.android.diploma.data.details.toCard
+import ru.practicum.android.diploma.data.details.toDetail
 import ru.practicum.android.diploma.domain.search.Salary
 
 class FavoriteVacancyMappersTest {
 
-    @Test
-    fun `entity with full salary maps to domain salary`() {
-        val entity = entity(salaryFrom = 100_000, salaryTo = 200_000, salaryCurrency = "RUR")
-
-        assertEquals(Salary(from = 100_000, to = 200_000, currency = "RUR"), entity.toDomain().salary)
-    }
+    private val gson = Gson()
 
     @Test
-    fun `entity with only lower bound still produces salary`() {
-        val entity = entity(salaryFrom = 50_000)
-
-        assertEquals(Salary(from = 50_000), entity.toDomain().salary)
-    }
-
-    @Test
-    fun `entity with all salary fields null maps to null salary`() {
-        val entity = entity()
-
-        assertNull(entity.toDomain().salary)
-    }
-
-    @Test
-    fun `round trip preserves display fields`() {
-        val domain = FavoriteVacancy(
-            id = "42",
-            name = "Android developer",
-            company = "Yandex",
-            city = "Moscow",
-            salary = Salary(from = 1, to = 2, currency = "USD"),
-            logo = "https://logo.example/png",
+    fun `entity with full salary json maps to card with salary`() {
+        val entity = entity(
+            salaryJson = """{"from":100000,"to":200000,"currency":"RUR"}""",
+            employerJson = """{"id":"e1","name":"Yandex","logo":"https://logo.example/img"}""",
+            areaJson = """{"id":1,"name":"Moscow"}""",
         )
 
-        val restored = domain.toEntity(addedAt = 7).toDomain()
+        val card = entity.toCard(gson)
 
-        assertEquals(domain, restored)
+        assertEquals("Yandex", card.company)
+        assertEquals("Moscow", card.city)
+        assertEquals(Salary(from = 100_000, to = 200_000, currency = "RUR"), card.salary)
+        assertEquals("https://logo.example/img", card.logo)
+    }
+
+    @Test
+    fun `entity with only lower bound salary still produces salary`() {
+        val entity = entity(
+            salaryJson = """{"from":50000,"currency":"USD"}""",
+        )
+
+        val card = entity.toCard(gson)
+
+        assertEquals(Salary(from = 50_000, currency = "USD"), card.salary)
+    }
+
+    @Test
+    fun `entity without salary json maps to null salary`() {
+        val entity = entity(salaryJson = null)
+
+        val card = entity.toCard(gson)
+
+        assertNull(card.salary)
+    }
+
+    @Test
+    fun `entity maps to detail with all fields`() {
+        val entity = entity(
+            salaryJson = """{"from":1,"to":2,"currency":"USD"}""",
+            employerJson = """{"id":"e1","name":"Yandex","logo":"https://logo.example/img"}""",
+            areaJson = """{"id":1,"name":"Moscow"}""",
+            skillsJson = """["Kotlin","Android"]""",
+            experienceId = "exp1",
+            experienceName = "1-3 years",
+        )
+
+        val detail = entity.toDetail(gson)
+
+        assertEquals("42", detail.id)
+        assertEquals("Android developer", detail.name)
+        assertEquals(Salary(from = 1, to = 2, currency = "USD"), detail.salary)
+        assertEquals("Yandex", detail.employer.name)
+        assertEquals("Moscow", detail.area?.name)
+        assertEquals(listOf("Kotlin", "Android"), detail.skills)
+        assertEquals("1-3 years", detail.experience?.name)
     }
 
     private fun entity(
-        salaryFrom: Int? = null,
-        salaryTo: Int? = null,
-        salaryCurrency: String? = null,
+        salaryJson: String? = null,
+        employerJson: String = """{"id":"e1","name":"Company"}""",
+        areaJson: String? = null,
+        skillsJson: String = "[]",
+        experienceId: String? = null,
+        experienceName: String? = null,
     ) = FavoriteVacancyEntity(
-        id = "1",
-        name = "Developer",
-        company = "Company",
-        city = "City",
-        salaryFrom = salaryFrom,
-        salaryTo = salaryTo,
-        salaryCurrency = salaryCurrency,
-        logo = null,
-        addedAt = 1,
+        id = "42",
+        name = "Android developer",
+        description = "Great job",
+        salaryJson = salaryJson,
+        addressJson = null,
+        experienceId = experienceId,
+        experienceName = experienceName,
+        scheduleId = null,
+        scheduleName = null,
+        employmentId = null,
+        employmentName = null,
+        contactsJson = null,
+        employerJson = employerJson,
+        areaJson = areaJson,
+        skillsJson = skillsJson,
+        url = "https://vacancy.example/42",
+        industryId = null,
+        industryName = null,
     )
 }

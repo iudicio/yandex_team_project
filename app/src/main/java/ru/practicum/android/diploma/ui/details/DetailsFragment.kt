@@ -2,8 +2,8 @@ package ru.practicum.android.diploma.ui.details
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,35 +11,25 @@ import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.di.appContainer
 import ru.practicum.android.diploma.domain.details.VacancyDetailResult
-import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractor
-import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 import ru.practicum.android.diploma.presentation.details.DetailsEvent
 import ru.practicum.android.diploma.presentation.details.DetailsViewModel
 import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 class DetailsFragment : Fragment() {
 
-    private val viewModel: DetailsViewModel by viewModels {
-        val container = requireContext().appContainer
-        DetailsViewModelFactory(
-            vacancyId = arguments?.getString(ARG_VACANCY_ID).orEmpty(),
-            vacancyDetailsInteractor = container.vacancyDetailsInteractor,
-            favoritesInteractor = container.favoritesInteractor,
-        )
+    private val viewModel: DetailsViewModel by viewModel {
+        parametersOf(requireArguments().getString(ARG_VACANCY_ID).orEmpty())
     }
 
     override fun onCreateView(
@@ -126,10 +116,11 @@ class DetailsFragment : Fragment() {
     private fun dialPhone(phone: String) {
         try {
             val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$phone")
+                data = "tel:$phone".toUri()
             }
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            Log.w("DetailsFragment", "No activity to handle intent", e)
             Toast.makeText(
                 requireContext(),
                 R.string.details_phone_error,
@@ -141,10 +132,11 @@ class DetailsFragment : Fragment() {
     private fun sendEmail(email: String) {
         try {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:$email")
+                data = "mailto:$email".toUri()
             }
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            Log.w("DetailsFragment", "No activity to handle intent", e)
             Toast.makeText(
                 requireContext(),
                 R.string.details_email_error,
@@ -176,26 +168,5 @@ class DetailsFragment : Fragment() {
 
     companion object {
         const val ARG_VACANCY_ID = "vacancy_id"
-    }
-}
-
-private class DetailsViewModelFactory(
-    private val vacancyId: String,
-    private val vacancyDetailsInteractor: VacancyDetailsInteractor,
-    private val favoritesInteractor: FavoritesInteractor,
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        require(modelClass == DetailsViewModel::class.java) {
-            "Unsupported ViewModel class: ${modelClass.name}"
-        }
-        return modelClass.cast(
-            DetailsViewModel(
-                savedStateHandle = extras.createSavedStateHandle(),
-                vacancyId = vacancyId,
-                vacancyDetailsInteractor = vacancyDetailsInteractor,
-                favoritesInteractor = favoritesInteractor,
-            ),
-        )
     }
 }

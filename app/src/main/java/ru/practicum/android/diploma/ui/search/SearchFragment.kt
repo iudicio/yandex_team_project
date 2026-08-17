@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.ui.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,21 +12,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.di.appContainer
 import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
-import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
-import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.presentation.search.SearchEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.details.DetailsFragment
@@ -35,15 +30,10 @@ import java.io.IOException
 
 class SearchFragment : Fragment() {
 
-    private val viewModel: SearchViewModel by viewModels {
-        val container = requireContext().appContainer
-        SearchViewModelFactory(
-            searchInteractor = container.searchInteractor,
-            filterSettingsRepository = container.filterSettingsRepository,
-        )
-    }
+    private val viewModel: SearchViewModel by viewModel()
     private val focusRequestKey = mutableIntStateOf(0)
     private val hasActiveFilters = mutableStateOf(false)
+    private val filterSettingsRepository: FilterSettingsRepository by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,11 +107,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun refreshActiveFilters() {
-        hasActiveFilters.value = requireContext()
-            .appContainer
-            .filterSettingsRepository
-            .load()
-            .hasActiveFilters
+        hasActiveFilters.value = filterSettingsRepository.load().hasActiveFilters
     }
 
     private fun openFilters() {
@@ -130,31 +116,15 @@ class SearchFragment : Fragment() {
             navController.navigate(R.id.action_navigationHome_to_navigationFilter)
         }
     }
+
     private fun openVacancy(id: String) {
         val navController = findNavController()
+        Log.d("SearchFragment", "openVacancy: id=$id, current=${navController.currentDestination?.id}")
         if (navController.currentDestination?.id == R.id.navigationHome) {
             val bundle = Bundle().apply {
                 putString(DetailsFragment.ARG_VACANCY_ID, id)
             }
             navController.navigate(R.id.detailsFragment, bundle)
         }
-    }
-}
-
-private class SearchViewModelFactory(
-    private val searchInteractor: SearchVacanciesInteractor,
-    private val filterSettingsRepository: FilterSettingsRepository,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        require(modelClass == SearchViewModel::class.java) {
-            "Unsupported ViewModel class: ${modelClass.name}"
-        }
-        return modelClass.cast(
-            SearchViewModel(
-                savedStateHandle = extras.createSavedStateHandle(),
-                searchInteractor = searchInteractor,
-                filterSettingsRepository = filterSettingsRepository,
-            ),
-        )
     }
 }

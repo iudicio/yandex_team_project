@@ -8,15 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.di.appContainer
-import ru.practicum.android.diploma.domain.filter.CatalogRepository
-import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
 import ru.practicum.android.diploma.presentation.filter.CountryViewModel
 import ru.practicum.android.diploma.presentation.filter.IndustryViewModel
 import ru.practicum.android.diploma.presentation.filter.RegionViewModel
@@ -25,9 +21,7 @@ import ru.practicum.android.diploma.ui.theme.DiplomaTheme
 
 class WorkplaceFragment : Fragment() {
 
-    private val viewModel: WorkplaceViewModel by viewModels {
-        WorkplaceViewModelFactory(requireContext().appContainer.filterSettingsRepository)
-    }
+    private val viewModel: WorkplaceViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -98,11 +92,8 @@ class WorkplaceFragment : Fragment() {
 
 class CountryFragment : Fragment() {
 
-    private val viewModel: CountryViewModel by viewModels {
-        CountryViewModelFactory(
-            repository = requireContext().appContainer.catalogRepository,
-            selectedCountryId = arguments?.nullableInt(ARG_COUNTRY_ID),
-        )
+    private val viewModel: CountryViewModel by viewModel {
+        parametersOf(arguments?.nullableInt(ARG_COUNTRY_ID))
     }
 
     override fun onCreateView(
@@ -132,11 +123,10 @@ class CountryFragment : Fragment() {
 
 class RegionFragment : Fragment() {
 
-    private val viewModel: RegionViewModel by viewModels {
-        RegionViewModelFactory(
-            repository = requireContext().appContainer.catalogRepository,
-            countryId = arguments?.nullableInt(ARG_COUNTRY_ID),
-            selectedRegionId = arguments?.nullableInt(ARG_REGION_ID),
+    private val viewModel: RegionViewModel by viewModel {
+        parametersOf(
+            arguments?.nullableInt(ARG_COUNTRY_ID),
+            arguments?.nullableInt(ARG_REGION_ID)
         )
     }
 
@@ -168,13 +158,8 @@ class RegionFragment : Fragment() {
 
 class IndustryFragment : Fragment() {
 
-    private val viewModel: IndustryViewModel by viewModels {
-        IndustryViewModelFactory(
-            repository = requireContext().appContainer.catalogRepository,
-            selectedIndustryId = arguments
-                ?.getString(ARG_INDUSTRY_ID)
-                ?.takeIf(String::isNotEmpty),
-        )
+    private val viewModel: IndustryViewModel by viewModel {
+        parametersOf(arguments?.getString(ARG_INDUSTRY_ID))
     }
 
     override fun onCreateView(
@@ -202,36 +187,4 @@ class IndustryFragment : Fragment() {
             }
         }
     }
-}
-
-private class WorkplaceViewModelFactory(
-    private val repository: FilterSettingsRepository,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        requireNotNull(modelClass.cast(WorkplaceViewModel(repository.load())))
-}
-
-private class CountryViewModelFactory(
-    private val repository: CatalogRepository,
-    private val selectedCountryId: Int?,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        requireNotNull(modelClass.cast(CountryViewModel(repository, selectedCountryId)))
-}
-
-private class RegionViewModelFactory(
-    private val repository: CatalogRepository,
-    private val countryId: Int?,
-    private val selectedRegionId: Int?,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        requireNotNull(modelClass.cast(RegionViewModel(repository, countryId, selectedRegionId)))
-}
-
-private class IndustryViewModelFactory(
-    private val repository: CatalogRepository,
-    private val selectedIndustryId: String?,
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        requireNotNull(modelClass.cast(IndustryViewModel(repository, selectedIndustryId)))
 }
