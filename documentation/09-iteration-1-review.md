@@ -6,7 +6,7 @@
 
 - Таск-трекер с декомпозицией Epic 0: [доска Trello](https://trello.com/b/GhZWYEH2/моя-доска-trello). Перед сдачей лид добавляет прямую ссылку на карточку/список Epic 0, если она отличается от ссылки на доску.
 - PR: [#9 — `iteration_1_review → main`](https://github.com/iudicio/yandex_team_project/pull/9).
-- CI run: **НУЖНО ЗАПОЛНИТЬ после запуска проверок: ссылка на успешный run**.
+- CI run: [GitHub Actions — PR checks #32251133853](https://github.com/iudicio/yandex_team_project/actions/runs/32251133853) — успешно.
 - Figma: [макеты дипломного проекта](https://www.figma.com/design/2xNhuofNp4bedjPLoQdBfC/%D0%94%D0%B8%D0%BF%D0%BB%D0%BE%D0%BC%D0%BD%D1%8B%D0%B9-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82--Copy-?node-id=0-1&p=f&t=Jx4VVgkNreueEhI9-0).
 - Скриншоты Android 8.1/API 27: [light](./screenshots/epic0-light-api27.png), [dark](./screenshots/epic0-dark-api27.png).
 
