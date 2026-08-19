@@ -27,7 +27,7 @@ Web-документация показывает raw-токен и обещае
 apiAccessToken=replace_locally
 ```
 
-В CI используется GitHub Actions secret `GH_API_ACCESS_TOKEN`. Реальное значение нельзя помещать в Markdown, `gradle.properties`, committed `local.properties`, исходный код, логи OkHttp или скриншоты.
+Обычный CI собирает проверочный APK с пустым токеном. Если позже добавляется live API smoke с GitHub Actions secret, он должен выполняться отдельным защищённым job без публикации APK. Реальное значение нельзя помещать в Markdown, `gradle.properties`, committed `local.properties`, исходный код, логи OkHttp или скриншоты.
 
 ## 2. Endpoint
 

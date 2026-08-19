@@ -1,7 +1,5 @@
 #!/bin/bash
 
-envs="
-apiAccessToken=${GH_API_ACCESS_TOKEN}
-"
+set -eu
 
-(echo "$envs" | grep -E '.+=.+') >> develop.properties
+printf 'apiAccessToken=%s\n' "${GH_API_ACCESS_TOKEN:-}" > develop.properties
