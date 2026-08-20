@@ -18,13 +18,13 @@
 |---|---|---|
 | [@iudicio](https://github.com/iudicio) | UI / Android UI-разработчик | План: Figma-аудит, Compose-тема, иконка, ComposeView-заглушки, Navigation и BottomNavigationView, UI QA. |
 | [@Vi1317](https://github.com/Vi1317) | BE-1 / Android Data & Domain | План: Gradle/Manifest, network foundation, безопасный API smoke, CI и матрица API-контракта. |
-| [@etSaikou](https://github.com/etSaikou) | BE-2 / Android Data & Domain | План: архитектурные контракты, Room/Koin foundation, тестовая инфраструктура и общая модель ошибок. |
+| [@etSaikou](https://github.com/etSaikou) | BE-2 / Android Data & Domain | План: архитектурные контракты, Room/Koin foundation, тестовая инфраструктура и правила ошибок для фич. |
 
 ## Выполнено в первой итерации
 
 - [x] Настроены Gradle и AndroidManifest: поддерживаемая версия Android, portrait, Application, тема и базовые зависимости.
 - [x] Подготовлены структура пакетов и контракты Clean Architecture для независимой работы участников.
-- [x] Добавлены общие foundations Data-слоя: Retrofit/OkHttp Network Client, Room и единая модель ошибок без продуктовой реализации фич.
+- [x] Добавлены общие foundations Data-слоя: конфигурация Retrofit/OkHttp, Room, Koin и правила feature-specific ошибок без продуктовой реализации фич.
 - [x] Настроена базовая Koin-инициализация и разделение общих зависимостей по модулям.
 - [x] Подключены JUnit, coroutine-test, MockWebServer и Compose UI test; добавлены unit- и navigation-тесты foundation.
 - [x] Настроены светлая и тёмная Compose `MaterialTheme`, общие UI-токены и иконка приложения.
@@ -61,7 +61,7 @@ Story points ниже — первоначальная относительна�
 | E0-07 — navigation, ComposeView-заглушки и bottom nav | UI | 3 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
 | E0-08 — безопасный network smoke | BE-1 | 2 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
 | E0-09 — test foundation | BE-2 | 2 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
-| E0-10 — единая модель ошибок | BE-2 | 3 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
+| E0-10 — правила feature-specific ошибок | BE-2 | 3 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
 | E0-11 — CI | BE-1 | 3 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
 | E0-12 — матрица API-контракта | BE-1 | 1 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
 | E0-15 — UI QA базовой структуры | UI | 3 | **НУЖНО ЗАПОЛНИТЬ** | **НУЖНО ЗАПОЛНИТЬ** |
