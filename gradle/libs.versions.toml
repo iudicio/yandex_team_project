@@ -66,6 +66,7 @@ retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", ve
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 # Testing
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
