@@ -15,9 +15,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
 
             -   name: Cleanup Github-Actions bot comments
+                if: github.event_name == 'pull_request'
                 continue-on-error: true
                 run: |
                     sh ./ci/github_comments_cleanup.sh "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" "github-actions[bot]" "${{ secrets.GITHUB_TOKEN }}"
@@ -25,12 +26,12 @@ jobs:
             -   name: Setup Reviewdog
                 uses: reviewdog/action-setup@v1
                 with:
-                    reviewdog_version: latest
+                    reviewdog_version: v0.21.0
 
-            -   name: Setup JDK 17 for build
-                uses: actions/setup-java@v3
+            -   name: Setup JDK 21 for build
+                uses: actions/setup-java@v4
                 with:
-                    java-version: '17'
+                    java-version: '21'
                     distribution: 'temurin'
                     cache: gradle
 
@@ -38,30 +39,38 @@ jobs:
                 run: chmod +x gradlew
 
             -   name: Run detekt
+                id: detekt
+                continue-on-error: true
                 run: ./gradlew detektAll $commonGradleFlags
 
             -   name: Run Reviewdog for Detekt as Github Review
+                if: always() && github.event_name == 'pull_request'
                 env:
                     REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     reviewdog $reviewdogSetup -reporter=github-pr-review <$detektReportPath
 
             -   name: Run Reviewdog for Detekt as Github CHECK
+                if: always()
                 env:
                     REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     reviewdog $reviewdogSetup -reporter=github-pr-check <$detektReportPath
 
+            -   name: Fail job when Detekt found issues
+                if: steps.detekt.outcome == 'failure'
+                run: exit 1
+
     assemble:
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
 
-            -   name: Setup JDK 17 for build
-                uses: actions/setup-java@v3
+            -   name: Setup JDK 21 for build
+                uses: actions/setup-java@v4
                 with:
-                    java-version: '17'
+                    java-version: '21'
                     distribution: 'temurin'
                     cache: gradle
 
@@ -69,13 +78,11 @@ jobs:
                 run: chmod +x gradlew
 
             -   name: Setup environment
-                env:
-                    GH_API_ACCESS_TOKEN: ${{ secrets.GH_API_ACCESS_TOKEN }}
                 run: |
                     sh ci/setup_env.sh
 
-            -   name: Assemble app
-                run: ./gradlew :app:assembleDebug $commonGradleFlags
+            -   name: Build, unit tests, lint and package UI tests
+                run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:assembleDebugAndroidTest $commonGradleFlags
 
             -   name: Archive production artifacts
                 uses: actions/upload-artifact@v4

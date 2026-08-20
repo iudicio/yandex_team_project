@@ -24,6 +24,7 @@ fun Detekt.setupCommonDetektSettings() {
     include("**/*.kts")
     exclude("**/resources/**")
     exclude("**/build/**")
+    exclude("**/bin/**")
 
     // reports configuration
     reports {
@@ -62,6 +63,7 @@ val detektProjectBaseline by tasks.register<DetektCreateBaselineTask>("detektPro
     include("**/*.kts")
     exclude("**/resources/**")
     exclude("**/build/**")
+    exclude("**/bin/**")
 
     // Common properties
     buildUponDefaultConfig.set(true)
@@ -83,5 +85,6 @@ project.withVersionCatalog { libs ->
         add("detekt", libs.staticAnalysis.detektCli)
         add("detektPlugins", libs.staticAnalysis.detektFormatting)
         add("detektPlugins", libs.staticAnalysis.detektLibraries)
+        add("detektPlugins", libs.staticAnalysis.detektTwitterComposeRules)
     }
 }
