@@ -13,7 +13,6 @@ import ru.practicum.android.diploma.data.network.AndroidConnectivityChecker
 import ru.practicum.android.diploma.data.network.AuthorizationInterceptor
 import ru.practicum.android.diploma.data.network.ConnectivityChecker
 import ru.practicum.android.diploma.data.network.NetworkAvailabilityInterceptor
-import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.RetrofitFactory
 import java.util.concurrent.TimeUnit
 
@@ -41,7 +40,6 @@ private val networkModule = module {
             .build()
     }
     single { RetrofitFactory.create(get()) }
-    single { NetworkClient(get()) }
 }
 
 private val databaseModule = module {
