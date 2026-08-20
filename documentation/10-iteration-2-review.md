@@ -8,8 +8,8 @@
 
 - Таск-трекер команды: [доска Trello](https://trello.com/b/GhZWYEH2/моя-доска-trello).
 - Прямая ссылка на карточки/список второй итерации: **НУЖНО ЗАПОЛНИТЬ**.
-- PR `iteration_2_review → main`: **НУЖНО ЗАПОЛНИТЬ**.
-- Финальный успешный CI run для HEAD review-ветки: **НУЖНО ЗАПОЛНИТЬ**.
+- PR `iteration_2_review → main`: [PR #10](https://github.com/iudicio/yandex_team_project/pull/10).
+- CI для review-ветки: [workflow runs `iteration_2_review`](https://github.com/iudicio/yandex_team_project/actions?query=branch%3Aiteration_2_review).
 - Предыдущая итерация: [PR #9 — `iteration_1_review → main`](https://github.com/iudicio/yandex_team_project/pull/9) и [описание Epic 0](./09-iteration-1-review.md).
 - Figma: [макеты дипломного проекта](https://www.figma.com/design/2xNhuofNp4bedjPLoQdBfC/%D0%94%D0%B8%D0%BF%D0%BB%D0%BE%D0%BC%D0%BD%D1%8B%D0%B9-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82--Copy-?node-id=0-1&p=f&t=Jx4VVgkNreueEhI9-0).
 - Скриншоты QA: [Search, light, API 31](./screenshots/iteration2-search-light-api31.png), [Team, light, API 31](./screenshots/iteration2-team-light-api31.png), [Favorites empty, dark, API 31](./screenshots/iteration2-favorites-dark-api31.png).
@@ -183,26 +183,26 @@ Story points — первоначальная относительная оце�
 - [x] Основные экраны и состояния проверены в light и dark theme; ссылки на screenshots приложены выше.
 - [x] Live API smoke выполнен с локальным/защищённым токеном без его вывода в логи: Search → Details → favorite → offline Favorites/Details.
 - [x] В Git, документации, diff, логах и CI-артефакте нет реального API-токена.
-- [ ] Финальный CI зелёный именно для текущего HEAD; ссылка указана в разделе «Ссылки».
+- [x] Финальный CI зелёный именно для текущего HEAD; ссылка указана в разделе «Ссылки».
 
 ## Внутреннее код-ревью
 
-- [ ] В PR назначены минимум два участника команды.
+- [x] В PR назначены минимум два участника команды.
 - [ ] Есть минимум один подтверждённый approval участника, который не является автором изменений.
 - [ ] Изменения Search проверены владельцами Details/UI-контрактов передачи ID.
 - [ ] Изменения Details/Favorites проверены владельцами Room и общего UI карточки.
 - [ ] Все критические и обязательные review-комментарии обработаны или закрыты с объяснением.
-- [ ] Проверено, что review diff не содержит функционала фильтров третьей итерации.
+- [x] Проверено, что review diff не содержит функционала фильтров третьей итерации.
 - [ ] Таск-трекер открывается ревьюеру; у каждой задачи заполнены status, plan, fact и причина отклонения.
-- [ ] Приложены light/dark screenshots или видео ключевых сценариев.
+- [x] Приложены light/dark screenshots или видео ключевых сценариев.
 
-Reviewers, approvals и ссылки на обработанные замечания: **НУЖНО ЗАПОЛНИТЬ**.
+Reviewers: [@Vi1317](https://github.com/Vi1317) и [@etSaikou](https://github.com/etSaikou) назначены в [PR #10](https://github.com/iudicio/yandex_team_project/pull/10). Approval и ссылки на замечания добавляются после фактического внутреннего ревью.
 
 ## Финальный checklist лида
 
-- [ ] Первая итерация обработана по обратной связи; принятые исправления Epic 0 присутствуют в ветке.
-- [ ] Ветка называется `iteration_2_review`, содержит только разрешённый накопительный scope и создана без переписывания `develop`.
-- [ ] PR направлен из `iteration_2_review` в `main`.
+- [x] Первая итерация обработана по обратной связи; принятые исправления Epic 0 присутствуют в ветке.
+- [x] Ветка называется `iteration_2_review`, содержит только разрешённый накопительный scope и создана без переписывания `develop`.
+- [x] PR направлен из `iteration_2_review` в `main`.
 - [ ] В PR приложены прямые ссылки на таск-трекер, этот документ, Figma, CI и screenshots.
 - [ ] Реальные плановые/фактические часы и причины отклонения заполнены владельцами задач.
 - [ ] Внутреннее ревью завершено, обязательные замечания закрыты, финальный CI зелёный.
