@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_empty">Список пуст</string>
+    <string name="favorites_database_error">Не удалось загрузить избранное</string>
+    <string name="favorites_salary_not_specified">Уровень зарплаты не указан</string>
+    <string name="favorites_company_logo">Логотип компании</string>
+</resources>
