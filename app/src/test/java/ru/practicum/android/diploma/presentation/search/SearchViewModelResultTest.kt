@@ -80,5 +80,6 @@ class SearchViewModelResultTest {
     private fun createViewModel(repository: QueueVacancyRepository): SearchViewModel = SearchViewModel(
         savedStateHandle = SavedStateHandle(),
         searchInteractor = SearchVacanciesInteractorImpl(repository),
+        filterSettingsInteractor = FakeFilterSettingsInteractor(),
     )
 }

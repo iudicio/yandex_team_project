@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.di
 
+import android.content.Context
 import androidx.room.Room
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -14,6 +15,11 @@ import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.details.RetrofitVacancyDetailRepository
 import ru.practicum.android.diploma.data.details.VacancyDetailsApi
 import ru.practicum.android.diploma.data.favorites.RoomFavoriteVacancyRepository
+import ru.practicum.android.diploma.data.filter.AreasApi
+import ru.practicum.android.diploma.data.filter.IndustriesApi
+import ru.practicum.android.diploma.data.filter.RetrofitAreasRepository
+import ru.practicum.android.diploma.data.filter.RetrofitIndustriesRepository
+import ru.practicum.android.diploma.data.filter.SharedPreferencesFilterSettingsRepository
 import ru.practicum.android.diploma.data.network.AndroidConnectivityChecker
 import ru.practicum.android.diploma.data.network.AuthorizationInterceptor
 import ru.practicum.android.diploma.data.network.ConnectivityChecker
@@ -27,15 +33,30 @@ import ru.practicum.android.diploma.domain.details.VacancyDetailsInteractorImpl
 import ru.practicum.android.diploma.domain.favorites.FavoriteVacancyRepository
 import ru.practicum.android.diploma.domain.favorites.FavoritesInteractor
 import ru.practicum.android.diploma.domain.favorites.FavoritesInteractorImpl
+import ru.practicum.android.diploma.domain.filter.AreasInteractor
+import ru.practicum.android.diploma.domain.filter.AreasInteractorImpl
+import ru.practicum.android.diploma.domain.filter.AreasRepository
+import ru.practicum.android.diploma.domain.filter.FilterSettingsInteractor
+import ru.practicum.android.diploma.domain.filter.FilterSettingsInteractorImpl
+import ru.practicum.android.diploma.domain.filter.FilterSettingsRepository
+import ru.practicum.android.diploma.domain.filter.IndustriesInteractor
+import ru.practicum.android.diploma.domain.filter.IndustriesInteractorImpl
+import ru.practicum.android.diploma.domain.filter.IndustriesRepository
 import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.presentation.details.DetailsViewModel
 import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
+import ru.practicum.android.diploma.presentation.filter.CountryViewModel
+import ru.practicum.android.diploma.presentation.filter.FilterViewModel
+import ru.practicum.android.diploma.presentation.filter.IndustryViewModel
+import ru.practicum.android.diploma.presentation.filter.RegionViewModel
+import ru.practicum.android.diploma.presentation.filter.WorkplaceViewModel
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import java.util.concurrent.TimeUnit
 
 private const val DATABASE_NAME = "diploma.db"
+private const val FILTER_SETTINGS_NAME = "filter_settings"
 private const val CONNECT_TIMEOUT_SECONDS = 15L
 private const val IO_TIMEOUT_SECONDS = 30L
 private const val CALL_TIMEOUT_SECONDS = 45L
@@ -61,6 +82,8 @@ private val networkModule = module {
     single { RetrofitFactory.create(get()) }
     single<VacancySearchApi> { get<Retrofit>().create(VacancySearchApi::class.java) }
     single<VacancyDetailsApi> { get<Retrofit>().create(VacancyDetailsApi::class.java) }
+    single<IndustriesApi> { get<Retrofit>().create(IndustriesApi::class.java) }
+    single<AreasApi> { get<Retrofit>().create(AreasApi::class.java) }
 }
 
 private val databaseModule = module {
@@ -75,6 +98,25 @@ private val databaseModule = module {
 }
 
 private val dataModule = module {
+    single {
+        androidContext().getSharedPreferences(
+            FILTER_SETTINGS_NAME,
+            Context.MODE_PRIVATE,
+        )
+    }
+    single<FilterSettingsRepository> { SharedPreferencesFilterSettingsRepository(get()) }
+    single<IndustriesRepository> {
+        RetrofitIndustriesRepository(
+            api = get(),
+            ioDispatcher = get<DispatcherProvider>().io,
+        )
+    }
+    single<AreasRepository> {
+        RetrofitAreasRepository(
+            api = get(),
+            ioDispatcher = get<DispatcherProvider>().io,
+        )
+    }
     single<VacancyRepository> {
         RetrofitVacancyRepository(
             api = get(),
@@ -86,14 +128,22 @@ private val dataModule = module {
 }
 
 private val domainModule = module {
+    single<FilterSettingsInteractor> { FilterSettingsInteractorImpl(get()) }
+    factory<IndustriesInteractor> { IndustriesInteractorImpl(get()) }
+    factory<AreasInteractor> { AreasInteractorImpl(get()) }
     factory<SearchVacanciesInteractor> { SearchVacanciesInteractorImpl(get()) }
     factory<FavoritesInteractor> { FavoritesInteractorImpl(get()) }
     factory<VacancyDetailsInteractor> { VacancyDetailsInteractorImpl(get(), get()) }
 }
 
 private val presentationModule = module {
-    viewModel { SearchViewModel(get(), get()) }
+    viewModel { SearchViewModel(get(), get(), get()) }
     viewModel { FavoritesViewModel(get()) }
+    viewModel { FilterViewModel(get()) }
+    viewModel { IndustryViewModel(get(), get()) }
+    viewModel { WorkplaceViewModel(get()) }
+    viewModel { CountryViewModel(get(), get()) }
+    viewModel { RegionViewModel(get(), get()) }
     viewModel { parameters ->
         DetailsViewModel(
             vacancyId = parameters.get(),

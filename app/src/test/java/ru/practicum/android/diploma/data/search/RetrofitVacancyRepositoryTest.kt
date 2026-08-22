@@ -120,6 +120,35 @@ class RetrofitVacancyRepositoryTest {
         assertNull(card.city)
         assertNull(card.logo)
     }
+
+    @Test
+    fun `passes all active filter parameters to api`() = runBlocking {
+        val api = FakeSearchApi()
+        val repository = RetrofitVacancyRepository(api, Dispatchers.Unconfined)
+
+        repository.search(
+            VacancySearchRequest(
+                text = "Android",
+                page = 2,
+                salary = 120_000,
+                onlyWithSalary = true,
+                industryId = "7.540",
+                areaId = 2,
+            ),
+        )
+
+        assertEquals(
+            CapturedRequest(
+                text = "Android",
+                page = 2,
+                salary = 120_000,
+                onlyWithSalary = true,
+                industryId = "7.540",
+                areaId = 2,
+            ),
+            api.request,
+        )
+    }
 }
 
 private class FakeSearchApi(
@@ -128,14 +157,28 @@ private class FakeSearchApi(
 ) : VacancySearchApi {
     var request: CapturedRequest? = null
 
-    override suspend fun searchVacancies(text: String, page: Int): VacancySearchResponseDto {
-        request = CapturedRequest(text, page)
+    override suspend fun searchVacancies(
+        text: String,
+        page: Int,
+        salary: Int?,
+        onlyWithSalary: Boolean?,
+        industryId: String?,
+        areaId: Int?,
+    ): VacancySearchResponseDto {
+        request = CapturedRequest(text, page, salary, onlyWithSalary, industryId, areaId)
         failure?.let { throwable -> throw throwable }
         return response
     }
 }
 
-private data class CapturedRequest(val text: String, val page: Int)
+private data class CapturedRequest(
+    val text: String,
+    val page: Int,
+    val salary: Int? = null,
+    val onlyWithSalary: Boolean? = null,
+    val industryId: String? = null,
+    val areaId: Int? = null,
+)
 
 private fun response(
     found: Int? = 5,
