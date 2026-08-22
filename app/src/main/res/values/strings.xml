@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Поиск вакансий</string>
 
-    <string name="navigation_search">Поиск</string>
+    <string name="navigation_search">Главная</string>
     <string name="navigation_favorites">Избранное</string>
     <string name="navigation_team">Команда</string>
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_toolbar_title">Вакансия</string>
+    <string name="details_back_description">Назад</string>
+    <string name="details_share_description">Поделиться</string>
+    <string name="details_favorite_add_description">Добавить в избранное</string>
+    <string name="details_favorite_remove_description">Удалить из избранного</string>
+    <string name="details_salary_not_specified">Уровень зарплаты не указан</string>
+    <string name="details_experience_label">Требуемый опыт работы:</string>
+    <string name="details_employment_schedule">%1$s • %2$s</string>
+    <string name="details_key_skills_title">Ключевые навыки</string>
+    <string name="details_skill_item">• %1$s</string>
+    <string name="details_contacts_title">Контакты</string>
+    <string name="details_contact_person">Контактное лицо</string>
+    <string name="details_contact_email">E-mail</string>
+    <string name="details_contact_phone">Телефон</string>
+    <string name="details_contact_comment">Комментарий</string>
+    <string name="details_retry">Повторить</string>
+    <string name="details_no_internet">Нет интернет-соединения</string>
+    <string name="details_not_found">Вакансия не найдена или удалена</string>
+    <string name="details_server_error">Не удалось получить данные о вакансии</string>
+    <string name="details_share_chooser_title">Поделиться вакансией</string>
+    <string name="details_phone_intent_error">Не удалось открыть приложение для звонков</string>
+    <string name="details_email_intent_error">Не удалось открыть почтовое приложение</string>
+    <string name="details_share_intent_error">Не удалось открыть меню «Поделиться»</string>
+    <string name="details_favorite_update_error">Не удалось изменить избранное</string>
+    <string name="details_company_logo_description">Логотип компании</string>
+</resources>
