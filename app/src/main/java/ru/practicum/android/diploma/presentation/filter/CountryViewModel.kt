@@ -89,5 +89,6 @@ class CountryViewModel(
 
 internal fun FilterCatalogError.toAreaUiState(): AreaResultUiState = when (this) {
     FilterCatalogError.NoInternet -> AreaResultUiState.NoInternet
+    FilterCatalogError.Server -> AreaResultUiState.ServerError
     FilterCatalogError.Generic -> AreaResultUiState.GenericError
 }

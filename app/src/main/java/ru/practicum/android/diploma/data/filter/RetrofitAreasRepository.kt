@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import ru.practicum.android.diploma.data.filter.dto.AreaDto
 import ru.practicum.android.diploma.data.network.NoInternetException
 import ru.practicum.android.diploma.domain.filter.Area
@@ -26,11 +27,16 @@ class RetrofitAreasRepository(
             throw exception
         } catch (_: NoInternetException) {
             FilterCatalogOutcome.Failure(FilterCatalogError.NoInternet)
+        } catch (exception: HttpException) {
+            FilterCatalogOutcome.Failure(exception.toFilterCatalogError())
         } catch (_: Exception) {
             FilterCatalogOutcome.Failure(FilterCatalogError.Generic)
         }
     }
 }
+
+private fun HttpException.toFilterCatalogError(): FilterCatalogError =
+    if (code() in SERVER_ERROR_CODES) FilterCatalogError.Server else FilterCatalogError.Generic
 
 private fun AreaDto.toDomain(fallbackParentId: Int?): Area? {
     val validId = id
@@ -47,3 +53,7 @@ private fun AreaDto.toDomain(fallbackParentId: Int?): Area? {
         )
     }
 }
+
+private const val SERVER_ERROR_CODE_MIN = 500
+private const val SERVER_ERROR_CODE_MAX = 599
+private val SERVER_ERROR_CODES = SERVER_ERROR_CODE_MIN..SERVER_ERROR_CODE_MAX

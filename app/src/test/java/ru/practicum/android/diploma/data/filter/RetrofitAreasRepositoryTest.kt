@@ -4,9 +4,13 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.practicum.android.diploma.data.filter.dto.AreaDto
 import ru.practicum.android.diploma.data.network.NoInternetException
 import ru.practicum.android.diploma.domain.filter.Area
@@ -55,8 +59,9 @@ class RetrofitAreasRepositoryTest {
     }
 
     @Test
-    fun `maps feature errors and rethrows cancellation`() = runBlocking {
+    fun `maps network server and generic errors and rethrows cancellation`() = runBlocking {
         val offline = RetrofitAreasRepository(FakeAreasApi(failure = NoInternetException()), Dispatchers.Unconfined)
+        val server = RetrofitAreasRepository(FakeAreasApi(failure = httpException(503)), Dispatchers.Unconfined)
         val generic = RetrofitAreasRepository(
             FakeAreasApi(failure = IllegalStateException("server")),
             Dispatchers.Unconfined,
@@ -65,6 +70,7 @@ class RetrofitAreasRepositoryTest {
         val cancelled = RetrofitAreasRepository(FakeAreasApi(failure = cancellation), Dispatchers.Unconfined)
 
         assertEquals(FilterCatalogOutcome.Failure(FilterCatalogError.NoInternet), offline.loadAreas())
+        assertEquals(FilterCatalogOutcome.Failure(FilterCatalogError.Server), server.loadAreas())
         assertEquals(FilterCatalogOutcome.Failure(FilterCatalogError.Generic), generic.loadAreas())
         val actual = try {
             cancelled.loadAreas()
@@ -75,6 +81,13 @@ class RetrofitAreasRepositoryTest {
         assertSame(cancellation, actual)
     }
 }
+
+private fun httpException(code: Int): HttpException = HttpException(
+    Response.error<Any>(
+        code,
+        "{}".toResponseBody("application/json".toMediaType()),
+    ),
+)
 
 private class FakeAreasApi(
     private val response: List<AreaDto?> = emptyList(),

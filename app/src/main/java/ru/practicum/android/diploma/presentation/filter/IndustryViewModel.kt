@@ -82,6 +82,7 @@ class IndustryViewModel(
                     mutableState.value = mutableState.value.copy(
                         result = when (outcome.error) {
                             FilterCatalogError.NoInternet -> IndustryResultUiState.NoInternet
+                            FilterCatalogError.Server -> IndustryResultUiState.ServerError
                             FilterCatalogError.Generic -> IndustryResultUiState.GenericError
                         },
                     )

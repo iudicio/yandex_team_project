@@ -64,6 +64,8 @@ internal sealed interface FilterCatalogContent {
 
     data object NoInternet : FilterCatalogContent
 
+    data object ServerError : FilterCatalogContent
+
     data object GenericError : FilterCatalogContent
 }
 
@@ -264,6 +266,13 @@ internal fun FilterCatalogBody(
         FilterCatalogContent.NoInternet -> FilterCatalogMessage(
             image = R.drawable.search_no_internet,
             message = stringResource(R.string.filter_no_internet),
+            testTag = UiTestTags.FILTER_CATALOG_ERROR,
+            modifier = modifier,
+            onRetry = onRetry,
+        )
+        FilterCatalogContent.ServerError -> FilterCatalogMessage(
+            image = R.drawable.search_server_error,
+            message = stringResource(R.string.filter_server_error),
             testTag = UiTestTags.FILTER_CATALOG_ERROR,
             modifier = modifier,
             onRetry = onRetry,

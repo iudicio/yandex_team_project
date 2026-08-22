@@ -21,6 +21,7 @@ sealed interface IndustryResultUiState {
     data class Content(val items: List<Industry>) : IndustryResultUiState
     data object Empty : IndustryResultUiState
     data object NoInternet : IndustryResultUiState
+    data object ServerError : IndustryResultUiState
     data object GenericError : IndustryResultUiState
 }
 
@@ -34,6 +35,7 @@ sealed interface AreaResultUiState {
     data class Content(val items: List<Area>) : AreaResultUiState
     data object Empty : AreaResultUiState
     data object NoInternet : AreaResultUiState
+    data object ServerError : AreaResultUiState
     data object GenericError : AreaResultUiState
 }
 

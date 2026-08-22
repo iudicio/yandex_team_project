@@ -52,6 +52,7 @@ private fun IndustryResultUiState.catalogContent(selectedId: String?): FilterCat
     )
     IndustryResultUiState.Empty -> FilterCatalogContent.Empty
     IndustryResultUiState.NoInternet -> FilterCatalogContent.NoInternet
+    IndustryResultUiState.ServerError -> FilterCatalogContent.ServerError
     IndustryResultUiState.GenericError -> FilterCatalogContent.GenericError
 }
 
@@ -68,6 +69,7 @@ private fun AreaResultUiState.catalogContent(selectedId: Int?): FilterCatalogCon
     )
     AreaResultUiState.Empty -> FilterCatalogContent.Empty
     AreaResultUiState.NoInternet -> FilterCatalogContent.NoInternet
+    AreaResultUiState.ServerError -> FilterCatalogContent.ServerError
     AreaResultUiState.GenericError -> FilterCatalogContent.GenericError
 }
 

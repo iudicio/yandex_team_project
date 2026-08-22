@@ -17,6 +17,7 @@
     <string name="filter_countries_load_error">Не удалось получить список</string>
     <string name="filter_regions_load_error">Не удалось получить список</string>
     <string name="filter_no_internet">Нет интернета</string>
+    <string name="filter_server_error">Ошибка сервера</string>
     <string name="filter_industry_not_found">Такой отрасли нет</string>
     <string name="filter_country_not_found">Такой страны нет</string>
     <string name="filter_region_not_found">Такого региона нет</string>

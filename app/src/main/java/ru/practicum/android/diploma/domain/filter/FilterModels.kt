@@ -38,5 +38,6 @@ sealed interface FilterCatalogOutcome<out T> {
 
 sealed interface FilterCatalogError {
     data object NoInternet : FilterCatalogError
+    data object Server : FilterCatalogError
     data object Generic : FilterCatalogError
 }

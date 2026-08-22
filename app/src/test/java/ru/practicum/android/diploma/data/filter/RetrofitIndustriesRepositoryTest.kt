@@ -3,9 +3,13 @@ package ru.practicum.android.diploma.data.filter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.practicum.android.diploma.data.filter.dto.IndustryDto
 import ru.practicum.android.diploma.data.network.NoInternetException
 import ru.practicum.android.diploma.domain.filter.FilterCatalogError
@@ -37,9 +41,13 @@ class RetrofitIndustriesRepositoryTest {
     }
 
     @Test
-    fun `maps feature specific network and generic errors`() = runBlocking {
+    fun `maps network server and generic errors`() = runBlocking {
         val offline = RetrofitIndustriesRepository(
             FakeIndustriesApi(failure = NoInternetException()),
+            Dispatchers.Unconfined,
+        )
+        val server = RetrofitIndustriesRepository(
+            FakeIndustriesApi(failure = httpException(503)),
             Dispatchers.Unconfined,
         )
         val generic = RetrofitIndustriesRepository(
@@ -50,6 +58,10 @@ class RetrofitIndustriesRepositoryTest {
         assertEquals(
             FilterCatalogOutcome.Failure(FilterCatalogError.NoInternet),
             offline.loadIndustries(),
+        )
+        assertEquals(
+            FilterCatalogOutcome.Failure(FilterCatalogError.Server),
+            server.loadIndustries(),
         )
         assertEquals(
             FilterCatalogOutcome.Failure(FilterCatalogError.Generic),
@@ -93,6 +105,13 @@ class RetrofitIndustriesRepositoryTest {
         assertSame(expected, actual)
     }
 }
+
+private fun httpException(code: Int): HttpException = HttpException(
+    Response.error<Any>(
+        code,
+        "{}".toResponseBody("application/json".toMediaType()),
+    ),
+)
 
 private class FakeIndustriesApi(
     private val response: List<IndustryDto?> = emptyList(),

@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import ru.practicum.android.diploma.data.filter.dto.IndustryDto
 import ru.practicum.android.diploma.data.network.NoInternetException
 import ru.practicum.android.diploma.domain.filter.FilterCatalogError
@@ -29,11 +30,16 @@ class RetrofitIndustriesRepository(
             throw exception
         } catch (_: NoInternetException) {
             FilterCatalogOutcome.Failure(FilterCatalogError.NoInternet)
+        } catch (exception: HttpException) {
+            FilterCatalogOutcome.Failure(exception.toFilterCatalogError())
         } catch (_: Exception) {
             FilterCatalogOutcome.Failure(FilterCatalogError.Generic)
         }
     }
 }
+
+private fun HttpException.toFilterCatalogError(): FilterCatalogError =
+    if (code() in SERVER_ERROR_CODES) FilterCatalogError.Server else FilterCatalogError.Generic
 
 private fun IndustryDto.flatten(): List<Industry> {
     val current = toDomain()?.let(::listOf).orEmpty()
@@ -46,3 +52,7 @@ private fun IndustryDto.toDomain(): Industry? {
     val validName = name?.trim()?.takeIf(String::isNotEmpty)
     return if (validId != null && validName != null) Industry(validId, validName) else null
 }
+
+private const val SERVER_ERROR_CODE_MIN = 500
+private const val SERVER_ERROR_CODE_MAX = 599
+private val SERVER_ERROR_CODES = SERVER_ERROR_CODE_MIN..SERVER_ERROR_CODE_MAX
