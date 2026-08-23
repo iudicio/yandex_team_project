@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -248,8 +249,9 @@ private fun SalaryCheckbox(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(FILTER_CHECKBOX_ROW_HEIGHT)
+            .heightIn(min = FILTER_CHECKBOX_ROW_HEIGHT)
             .clickable { onCheckedChange(!checked) }
+            .padding(vertical = FILTER_CHECKBOX_VERTICAL_PADDING)
             .testTag(UiTestTags.FILTER_ONLY_WITH_SALARY),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -274,6 +276,7 @@ private val FILTER_SCREEN_PADDING = 16.dp
 private val FILTER_SCREEN_GAP = 16.dp
 private val FILTER_FIELD_HEIGHT = 56.dp
 private val FILTER_CHECKBOX_ROW_HEIGHT = 48.dp
+private val FILTER_CHECKBOX_VERTICAL_PADDING = 4.dp
 private val FILTER_TOUCH_SIZE = 48.dp
 private val FILTER_CORNER_RADIUS = 12.dp
 private val FILTER_ICON_PADDING = 4.dp

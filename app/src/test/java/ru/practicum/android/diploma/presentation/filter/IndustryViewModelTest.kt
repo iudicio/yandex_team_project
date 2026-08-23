@@ -44,7 +44,7 @@ class IndustryViewModelTest {
 
         viewModel.onQueryChanged("нет совпадений")
         assertEquals(IndustryResultUiState.Empty, viewModel.state.value.result)
-        assertFalse(viewModel.state.value.canConfirm)
+        assertTrue(viewModel.state.value.canConfirm)
     }
 
     @Test

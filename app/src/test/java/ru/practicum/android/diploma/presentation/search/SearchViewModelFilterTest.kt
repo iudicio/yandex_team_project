@@ -5,10 +5,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ru.practicum.android.diploma.domain.filter.FilterSettings
+import ru.practicum.android.diploma.domain.filter.Industry
 import ru.practicum.android.diploma.domain.search.SearchOutcome
 import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractorImpl
 
@@ -73,6 +76,35 @@ class SearchViewModelFilterTest {
         assertEquals(2, repository.requests.size)
         assertEquals(120_000, repository.requests.last().salary)
         assertTrue(repository.requests.last().onlyWithSalary)
+        assertEquals(filters.current(), filters.applied())
+    }
+
+    @Test
+    fun `applying reset repeats query without filter parameters`() = runTest(mainDispatcherRule.dispatcher) {
+        val repository = QueueVacancyRepository().apply {
+            enqueue(SearchOutcome.Success(page()))
+            enqueue(SearchOutcome.Success(page()))
+        }
+        val filters = FakeFilterSettingsInteractor(
+            FilterSettings(
+                salary = 120_000,
+                onlyWithSalary = true,
+                industry = Industry("7.540", "IT"),
+            ),
+        )
+        val viewModel = createViewModel(repository, filters)
+        viewModel.onQueryChanged("Android")
+        viewModel.submit()
+        runCurrent()
+
+        filters.reset()
+        viewModel.onFiltersApplied()
+        runCurrent()
+
+        assertEquals(2, repository.requests.size)
+        assertNull(repository.requests.last().salary)
+        assertFalse(repository.requests.last().onlyWithSalary)
+        assertNull(repository.requests.last().industryId)
         assertEquals(filters.current(), filters.applied())
     }
 

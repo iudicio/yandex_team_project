@@ -48,11 +48,16 @@ class IndustryViewModel(
 
     fun select(industry: Industry) {
         val canonicalIndustry = industries.firstOrNull { item -> item.id == industry.id } ?: return
-        mutableState.value = mutableState.value.copy(selectedIndustry = canonicalIndustry)
+        mutableState.value = mutableState.value.copy(
+            selectedIndustry = canonicalIndustry,
+            isSelectionValid = true,
+        )
     }
 
     fun confirm() {
-        val selected = mutableState.value.selectedIndustry ?: return
+        val state = mutableState.value
+        if (!state.canConfirm) return
+        val selected = state.selectedIndustry ?: return
         settingsInteractor.save(settingsInteractor.current().copy(industry = selected))
         eventChannel.trySend(IndustryEvent.Confirmed(selected))
     }
@@ -63,7 +68,10 @@ class IndustryViewModel(
 
     private fun load() {
         loadJob?.cancel()
-        mutableState.value = mutableState.value.copy(result = IndustryResultUiState.Loading)
+        mutableState.value = mutableState.value.copy(
+            result = IndustryResultUiState.Loading,
+            isSelectionValid = false,
+        )
         loadJob = viewModelScope.launch {
             when (val outcome = safeLoad()) {
                 is FilterCatalogOutcome.Success -> {
@@ -72,9 +80,10 @@ class IndustryViewModel(
                     val canonicalSelection = selected?.let { saved ->
                         industries.firstOrNull { industry -> industry.id == saved.id }
                     }
-                    if (canonicalSelection != null) {
-                        mutableState.value = mutableState.value.copy(selectedIndustry = canonicalSelection)
-                    }
+                    mutableState.value = mutableState.value.copy(
+                        selectedIndustry = canonicalSelection ?: selected,
+                        isSelectionValid = canonicalSelection != null,
+                    )
                     showFilteredIndustries()
                 }
                 is FilterCatalogOutcome.Failure -> {
@@ -85,6 +94,7 @@ class IndustryViewModel(
                             FilterCatalogError.Server -> IndustryResultUiState.ServerError
                             FilterCatalogError.Generic -> IndustryResultUiState.GenericError
                         },
+                        isSelectionValid = false,
                     )
                 }
             }

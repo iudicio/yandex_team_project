@@ -111,9 +111,14 @@ internal fun FilterSettingRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(FILTER_SETTING_ROW_HEIGHT)
+            .heightIn(min = FILTER_SETTING_ROW_HEIGHT)
             .clickable(onClick = onClick)
-            .padding(start = FILTER_HORIZONTAL_PADDING, end = FILTER_ICON_PADDING)
+            .padding(
+                start = FILTER_HORIZONTAL_PADDING,
+                top = FILTER_SETTING_ROW_VERTICAL_PADDING,
+                end = FILTER_ICON_PADDING,
+                bottom = FILTER_SETTING_ROW_VERTICAL_PADDING,
+            )
             .testTag(testTag),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -133,7 +138,6 @@ internal fun FilterSettingRow(
                     text = selectedValue,
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
                 )
             }
         }
@@ -430,6 +434,7 @@ private fun FilterCatalogMessage(
 private val FILTER_TOUCH_SIZE = 48.dp
 private val FILTER_FIELD_HEIGHT = 56.dp
 private val FILTER_SETTING_ROW_HEIGHT = 60.dp
+private val FILTER_SETTING_ROW_VERTICAL_PADDING = 8.dp
 private val FILTER_BUTTON_HEIGHT = 60.dp
 private val FILTER_LIST_ROW_HEIGHT = 56.dp
 private val FILTER_LIST_ROW_VERTICAL_PADDING = 12.dp
