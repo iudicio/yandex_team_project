@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.filter.FilterSettings
+import ru.practicum.android.diploma.domain.filter.FilterSettingsInteractor
 import ru.practicum.android.diploma.domain.search.SearchError
 import ru.practicum.android.diploma.domain.search.SearchOutcome
 import ru.practicum.android.diploma.domain.search.SearchVacanciesInteractor
@@ -23,11 +26,16 @@ import ru.practicum.android.diploma.domain.search.VacancySearchRequest
 class SearchViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val searchInteractor: SearchVacanciesInteractor,
+    private val filterSettingsInteractor: FilterSettingsInteractor,
     private val debounceMillis: Long = DEFAULT_DEBOUNCE_MILLIS,
 ) : ViewModel() {
 
+    private var currentFilters: FilterSettings = filterSettingsInteractor.current()
     private val _state = MutableStateFlow(
-        SearchUiState(query = savedStateHandle.get<String>(QUERY_KEY).orEmpty()),
+        SearchUiState(
+            query = savedStateHandle.get<String>(QUERY_KEY).orEmpty(),
+            hasActiveFilters = currentFilters.hasActiveFilters,
+        ),
     )
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
 
@@ -45,17 +53,33 @@ class SearchViewModel(
 
     init {
         require(debounceMillis >= 0L) { "Debounce must not be negative" }
+        viewModelScope.launch {
+            filterSettingsInteractor.observe().collectLatest { settings ->
+                currentFilters = settings
+                _state.value = _state.value.copy(hasActiveFilters = settings.hasActiveFilters)
+            }
+        }
         if (_state.value.query.isNotBlank()) restartSearch(debounceMillis)
     }
 
     fun onQueryChanged(query: String) {
         if (query == _state.value.query) return
         savedStateHandle[QUERY_KEY] = query
-        _state.value = SearchUiState(query = query)
+        _state.value = SearchUiState(
+            query = query,
+            hasActiveFilters = currentFilters.hasActiveFilters,
+        )
         restartSearch(debounceMillis)
     }
 
     fun submit() = restartSearch(delayMillis = 0L)
+
+    fun onFiltersApplied() {
+        currentFilters = filterSettingsInteractor.current()
+        filterSettingsInteractor.markApplied(currentFilters)
+        _state.value = _state.value.copy(hasActiveFilters = currentFilters.hasActiveFilters)
+        if (_state.value.query.isNotBlank()) restartSearch(delayMillis = 0L)
+    }
 
     fun loadNextPage() {
         val content = _state.value.result as? SearchResultUiState.Content ?: return
@@ -90,10 +114,14 @@ class SearchViewModel(
         resetPagination()
         val query = _state.value.query
         if (query.isBlank()) {
-            _state.value = SearchUiState(query = query)
+            _state.value = SearchUiState(
+                query = query,
+                hasActiveFilters = currentFilters.hasActiveFilters,
+            )
             return
         }
-        val request = VacancySearchRequest(text = query.trim())
+        val request = currentFilters.toSearchRequest(query)
+        filterSettingsInteractor.markApplied(currentFilters)
         if (delayMillis == 0L) showLoading()
         searchJob = viewModelScope.launch {
             if (delayMillis > 0L) delay(delayMillis)
@@ -190,3 +218,11 @@ class SearchViewModel(
         const val QUERY_KEY = "search_query"
     }
 }
+
+private fun FilterSettings.toSearchRequest(query: String): VacancySearchRequest = VacancySearchRequest(
+    text = query.trim(),
+    salary = salary,
+    onlyWithSalary = onlyWithSalary,
+    industryId = industryId,
+    areaId = areaId,
+)

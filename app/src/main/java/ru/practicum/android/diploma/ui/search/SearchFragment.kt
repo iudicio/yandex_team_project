@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
@@ -17,6 +18,7 @@ import ru.practicum.android.diploma.domain.search.SearchError
 import ru.practicum.android.diploma.presentation.search.SearchEvent
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.common.ComposeDestinationFragment
+import ru.practicum.android.diploma.ui.common.FILTER_APPLIED_RESULT_KEY
 import ru.practicum.android.diploma.ui.common.vacancyArguments
 
 class SearchFragment : ComposeDestinationFragment() {
@@ -49,6 +51,15 @@ class SearchFragment : ComposeDestinationFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>(FILTER_APPLIED_RESULT_KEY)
+            ?.observe(viewLifecycleOwner) { wasApplied ->
+                if (wasApplied == true) {
+                    findNavController().currentBackStackEntry?.savedStateHandle
+                        ?.remove<Boolean>(FILTER_APPLIED_RESULT_KEY)
+                    viewModel.onFiltersApplied()
+                }
+            }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.events.collect { event ->
