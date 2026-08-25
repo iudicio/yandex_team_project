@@ -10,6 +10,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import ru.practicum.android.diploma.domain.filter.Area
 import ru.practicum.android.diploma.domain.filter.FilterSettings
 import ru.practicum.android.diploma.domain.filter.Industry
 import ru.practicum.android.diploma.domain.search.SearchOutcome
@@ -69,13 +70,23 @@ class SearchViewModelFilterTest {
         viewModel.submit()
         runCurrent()
 
-        filters.save(FilterSettings(salary = 120_000, onlyWithSalary = true))
+        filters.save(
+            FilterSettings(
+                salary = 120_000,
+                onlyWithSalary = true,
+                industry = Industry("7.540", "IT"),
+                country = Area(113, "Россия"),
+                region = Area(1, "Москва"),
+            ),
+        )
         viewModel.onFiltersApplied()
         runCurrent()
 
         assertEquals(2, repository.requests.size)
         assertEquals(120_000, repository.requests.last().salary)
         assertTrue(repository.requests.last().onlyWithSalary)
+        assertEquals("7.540", repository.requests.last().industryId)
+        assertEquals(1, repository.requests.last().areaId)
         assertEquals(filters.current(), filters.applied())
     }
 
@@ -90,6 +101,8 @@ class SearchViewModelFilterTest {
                 salary = 120_000,
                 onlyWithSalary = true,
                 industry = Industry("7.540", "IT"),
+                country = Area(113, "Россия"),
+                region = Area(1, "Москва"),
             ),
         )
         val viewModel = createViewModel(repository, filters)
@@ -105,6 +118,7 @@ class SearchViewModelFilterTest {
         assertNull(repository.requests.last().salary)
         assertFalse(repository.requests.last().onlyWithSalary)
         assertNull(repository.requests.last().industryId)
+        assertNull(repository.requests.last().areaId)
         assertEquals(filters.current(), filters.applied())
     }
 
