@@ -126,6 +126,29 @@ class RootNavigationTest {
     }
 
     @Test
+    fun appliedFiltersCanBeResetAndAppliedAsEmpty() {
+        composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
+
+        val salaryInput = composeRule.onNodeWithTag(UiTestTags.FILTER_SALARY_INPUT)
+        salaryInput.performClick()
+        salaryInput.performTextClearance()
+        salaryInput.performTextInput("150000")
+        composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).performClick()
+
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_SCREEN).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_RESET).performClick()
+
+        composeRule.onNodeWithTag(UiTestTags.FILTER_RESET).assertDoesNotExist()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).assertIsDisplayed().performClick()
+
+        composeRule.onNodeWithTag(UiTestTags.SEARCH_SCREEN).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_RESET).assertDoesNotExist()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).assertDoesNotExist()
+    }
+
+    @Test
     fun selectedTabSurvivesActivityRecreation() {
         onView(withId(R.id.navigationFavorites)).perform(click())
         composeRule.onNodeWithText(text(R.string.favorites_title)).assertIsDisplayed()
