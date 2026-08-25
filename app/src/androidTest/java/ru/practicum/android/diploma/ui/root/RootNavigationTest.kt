@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -20,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.common.VACANCY_ID_ARGUMENT
+import ru.practicum.android.diploma.ui.components.UiTestTags
 
 @RunWith(AndroidJUnit4::class)
 class RootNavigationTest {
@@ -44,7 +48,7 @@ class RootNavigationTest {
     fun nestedDestinationHidesBottomNavigationAndBackRestoresIt() {
         composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
 
-        composeRule.onNodeWithText(text(R.string.screen_filter)).assertIsDisplayed()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_SCREEN).assertIsDisplayed()
         onView(withId(R.id.bottomNavigation)).check(
             androidx.test.espresso.assertion.ViewAssertions.matches(
                 withEffectiveVisibility(GONE),
@@ -83,27 +87,42 @@ class RootNavigationTest {
     }
 
     @Test
-    fun allNestedPlaceholdersFollowThePlannedGraph() {
+    fun allFilterDestinationsFollowThePlannedGraph() {
         composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
-        composeRule.onNodeWithText(text(R.string.action_open_workplace)).performClick()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_SCREEN).assertIsDisplayed()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_WORKPLACE).performClick()
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_SCREEN).assertIsDisplayed()
 
-        composeRule.onNodeWithText(text(R.string.action_open_country)).performClick()
-        composeRule.onNodeWithText(text(R.string.screen_country)).assertIsDisplayed()
-        composeRule.onNodeWithText(text(R.string.action_back)).performClick()
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_COUNTRY).performClick()
+        composeRule.onNodeWithTag(UiTestTags.COUNTRY_SCREEN).assertIsDisplayed()
+        pressBack()
 
-        composeRule.onNodeWithText(text(R.string.action_open_region)).performClick()
-        composeRule.onNodeWithText(text(R.string.screen_region)).assertIsDisplayed()
-        composeRule.onNodeWithText(text(R.string.action_back)).performClick()
+        composeRule.onNodeWithTag(UiTestTags.WORKPLACE_REGION).performClick()
+        composeRule.onNodeWithTag(UiTestTags.REGION_SCREEN).assertIsDisplayed()
+        pressBack()
 
-        composeRule.onNodeWithText(text(R.string.action_back)).performClick()
-        composeRule.onNodeWithText(text(R.string.action_open_industry)).performClick()
-        composeRule.onNodeWithText(text(R.string.screen_industry)).assertIsDisplayed()
+        pressBack()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_INDUSTRY).performClick()
+        composeRule.onNodeWithTag(UiTestTags.INDUSTRY_SCREEN).assertIsDisplayed()
 
         onView(withId(R.id.bottomNavigation)).check(
             androidx.test.espresso.assertion.ViewAssertions.matches(
                 withEffectiveVisibility(GONE),
             ),
         )
+    }
+
+    @Test
+    fun filterActionsRemainVisibleWhenSalaryImeIsOpen() {
+        composeRule.onNodeWithContentDescription(text(R.string.search_filter_description)).performClick()
+
+        val salaryInput = composeRule.onNodeWithTag(UiTestTags.FILTER_SALARY_INPUT)
+        salaryInput.performClick()
+        salaryInput.performTextClearance()
+        salaryInput.performTextInput("150000")
+
+        composeRule.onNodeWithTag(UiTestTags.FILTER_APPLY).assertIsDisplayed()
+        composeRule.onNodeWithTag(UiTestTags.FILTER_RESET).assertIsDisplayed()
     }
 
     @Test
@@ -124,4 +143,10 @@ class RootNavigationTest {
 
     private fun text(resourceId: Int, vararg formatArgs: Any): String =
         composeRule.activity.getString(resourceId, *formatArgs)
+
+    private fun pressBack() {
+        composeRule.activityRule.scenario.onActivity { activity ->
+            activity.onBackPressedDispatcher.onBackPressed()
+        }
+    }
 }

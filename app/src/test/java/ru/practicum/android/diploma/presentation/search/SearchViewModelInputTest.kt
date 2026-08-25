@@ -124,6 +124,7 @@ class SearchViewModelInputTest {
     ): SearchViewModel = SearchViewModel(
         savedStateHandle = handle,
         searchInteractor = SearchVacanciesInteractorImpl(repository),
+        filterSettingsInteractor = FakeFilterSettingsInteractor(),
     )
 
     private companion object {

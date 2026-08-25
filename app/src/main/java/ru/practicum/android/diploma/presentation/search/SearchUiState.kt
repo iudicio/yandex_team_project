@@ -6,6 +6,7 @@ import ru.practicum.android.diploma.domain.search.VacancyCard
 data class SearchUiState(
     val query: String = "",
     val result: SearchResultUiState = SearchResultUiState.Initial,
+    val hasActiveFilters: Boolean = false,
 )
 
 sealed interface SearchResultUiState {

@@ -28,7 +28,14 @@ class RetrofitVacancyRepository(
             val requestDto = request.toDto()
             try {
                 SearchOutcome.Success(
-                    api.searchVacancies(requestDto.text, requestDto.page)
+                    api.searchVacancies(
+                        text = requestDto.text,
+                        page = requestDto.page,
+                        salary = requestDto.salary,
+                        onlyWithSalary = requestDto.onlyWithSalary,
+                        industryId = requestDto.industryId,
+                        areaId = requestDto.areaId,
+                    )
                         .toDomain(fallbackPage = requestDto.page),
                 )
             } catch (exception: CancellationException) {
@@ -44,6 +51,10 @@ class RetrofitVacancyRepository(
 private fun VacancySearchRequest.toDto(): VacancySearchRequestDto = VacancySearchRequestDto(
     text = text.trim(),
     page = page,
+    salary = salary,
+    onlyWithSalary = onlyWithSalary.takeIf { it },
+    industryId = industryId,
+    areaId = areaId,
 )
 
 private fun VacancySearchResponseDto.toDomain(fallbackPage: Int): VacancySearchPage = VacancySearchPage(

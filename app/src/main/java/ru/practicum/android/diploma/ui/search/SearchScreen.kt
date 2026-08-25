@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -77,7 +78,10 @@ fun SearchScreen(
             .background(MaterialTheme.colorScheme.background)
             .testTag(UiTestTags.SEARCH_SCREEN),
     ) {
-        SearchHeader(onFilterClicked)
+        SearchHeader(
+            hasActiveFilters = state.hasActiveFilters,
+            onFilterClicked = onFilterClicked,
+        )
         SearchField(
             query = state.query,
             onQueryChanged = onQueryChanged,
@@ -98,15 +102,24 @@ fun SearchScreen(
 }
 
 @Composable
-private fun SearchHeader(onFilterClicked: () -> Unit) {
+private fun SearchHeader(
+    hasActiveFilters: Boolean,
+    onFilterClicked: () -> Unit,
+) {
     ScreenHeader(
         title = stringResource(R.string.search_title),
         actions = {
             IconButton(onClick = onFilterClicked, modifier = Modifier.size(48.dp)) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_filter),
+                    painter = painterResource(
+                        if (hasActiveFilters) R.drawable.ic_filter_active else R.drawable.ic_filter,
+                    ),
                     contentDescription = stringResource(R.string.search_filter_description),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = if (hasActiveFilters) {
+                        Color.Unspecified
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                    },
                 )
             }
         },
