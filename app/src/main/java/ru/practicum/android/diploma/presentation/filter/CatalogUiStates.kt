@@ -10,7 +10,11 @@ data class IndustryUiState(
     val isSelectionValid: Boolean = false,
 ) {
     val canConfirm: Boolean
-        get() = selectedIndustry != null && isSelectionValid
+        get() {
+            val selectedId = selectedIndustry?.id ?: return false
+            val visibleIndustries = (result as? IndustryResultUiState.Content)?.items ?: return false
+            return isSelectionValid && visibleIndustries.any { industry -> industry.id == selectedId }
+        }
 }
 
 sealed interface IndustryResultUiState {
