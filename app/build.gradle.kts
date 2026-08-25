@@ -47,10 +47,6 @@ kotlin {
     }
 }
 
-ksp {
-    arg("room.schemaLocation", file("$projectDir/schemas").path)
-}
-
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
@@ -89,7 +85,6 @@ dependencies {
     testImplementation(libs.mockwebserver)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.room.testing)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
 }

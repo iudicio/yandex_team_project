@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="team_title">Над приложением работали</string>
-    <string-array name="team_members">
-        <item>iudicio</item>
-        <item>Vi1317</item>
-        <item>etSaikou</item>
-    </string-array>
-</resources>

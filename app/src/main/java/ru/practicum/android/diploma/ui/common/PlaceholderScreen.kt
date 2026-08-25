@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.ui.theme.AppDimensions
+import ru.practicum.android.diploma.ui.theme.Dimens
 
 @Composable
 fun PlaceholderScreen(
@@ -27,9 +27,9 @@ fun PlaceholderScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(AppDimensions.dp16),
+            .padding(Dimens.ScreenPadding),
         verticalArrangement = Arrangement.spacedBy(
-            space = AppDimensions.dp16,
+            space = Dimens.ContentSpacing,
             alignment = Alignment.CenterVertically,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,

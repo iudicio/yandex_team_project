@@ -11,20 +11,14 @@ import ru.practicum.android.diploma.data.db.entity.FavoriteVacancyEntity
 interface FavoriteVacancyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(vacancy: FavoriteVacancyEntity)
+    suspend fun upsert(vacancy: FavoriteVacancyEntity)
 
-    @Query("DELETE FROM favorite_vacancies WHERE id = :vacancyId")
-    suspend fun deleteById(vacancyId: String)
+    @Query("SELECT * FROM favorite_vacancies WHERE vacancyId = :vacancyId")
+    suspend fun findById(vacancyId: String): FavoriteVacancyEntity?
 
     @Query("SELECT * FROM favorite_vacancies ORDER BY addedAt DESC")
     fun observeAll(): Flow<List<FavoriteVacancyEntity>>
 
-    @Query("SELECT * FROM favorite_vacancies ORDER BY addedAt DESC")
-    suspend fun getAll(): List<FavoriteVacancyEntity>
-
-    @Query("SELECT * FROM favorite_vacancies WHERE id = :vacancyId LIMIT 1")
-    suspend fun findById(vacancyId: String): FavoriteVacancyEntity?
-
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_vacancies WHERE id = :vacancyId)")
-    fun observeIsFavorite(vacancyId: String): Flow<Boolean>
+    @Query("DELETE FROM favorite_vacancies WHERE vacancyId = :vacancyId")
+    suspend fun deleteById(vacancyId: String)
 }
